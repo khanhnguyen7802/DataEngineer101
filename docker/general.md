@@ -84,7 +84,7 @@ docker stop <the-container-id>
 ```
 
 # More about
-
+Now, let's dive into the basics !!!
 ## Running containers
 
 A `docker run` command takes the following form:
@@ -188,3 +188,54 @@ of related container images within a registry.
 
 7. Go to [Docker Hub](https://hub.docker.com/) to view your Image.
    ![alt text](image-11.png)
+
+## Docker Compose
+
+### Why do we need this ?
+
+- How to work with complicated containers (e.g., run databases, message queues, caches...)? Install everything in a single container? Run multiple containers? If run multiple, how to connect them? \
+  -> Each container should do one thing and do it well.
+
+### Usage
+
+With Docker Compose, you can define all of your containers and their configurations in a single YAML file.
+
+- `Dockerfile vs Compose file`
+
+|     |                     Dockerfile                      |         Compose file          |
+| :-- | :-------------------------------------------------: | :---------------------------: |
+|     | provide instructions to **build a container image** | define your running container |
+
+> _Quite often, a Compose file references a Dockerfile to build an image to use for a particular service._
+
+#### Example
+
+1. Clone this github repo (a sample Node.js project with MySQL as database server):
+   ```
+   git clone https://github.com/dockersamples/todo-list-app
+   ```
+2. Navigate to the cloned folder, where you will find a file named `compose.yaml`. \
+   It defines all the services that make up the application, along with their configurations. Each service specifies its image, ports, volumes, networks, and any other settings necessary for its functionality.
+3. Use `docker compose up` to start the application:
+
+   ```
+   docker compose up -d --build
+   ```
+
+   ![alt text](image-12.png)
+
+   - Two container images were downloaded from Docker Hub - node and MySQL
+   - A network was created for your application
+   - A volume was created to persist the database files between container restarts
+   - Two containers were started with all of their necessary config
+
+4. Open [localhost](http://localhost:3000) to view the page.
+5. After having done all, you can simply tear it down (stop and remove containers and networks (optionally images and volumes as well)).
+
+   ```
+   docker compose down
+   ```
+
+   ![alt text](image-13.png)
+
+## Building Images
