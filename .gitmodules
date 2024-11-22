@@ -1,0 +1,3 @@
+[submodule "docker/test/helloworld-demo-node"]
+	path = docker/test/helloworld-demo-node
+	url = https://github.com/dockersamples/helloworld-demo-node.git
