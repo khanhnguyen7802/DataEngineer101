@@ -33,7 +33,9 @@
 1. Dockerfile: is just code telling Docker how to build an image.
 2. Image: is a snapshot of all softwares and their dependencies down to the OS level \
    -> is used for running Docker Containers.
-   Images can be stored in either public or private repos, but usually public repos are used to host Docker Images which can be used by everyone. - Immutable, i.e., cannot be modified after being created. - Composed of layers; each layers represents a set of file system that changes, add, remove or modify files.
+   Images can be stored in either public or private repos, but usually public repos are used to host Docker Images which can be used by everyone.
+   - Immutable, i.e., cannot be modified after being created.
+   - Composed of layers; each layers represents a set of file system that changes, add, remove or modify files.
 3. Container: is a standalone, executable software package which includes applications and their dependencies.
 4. Registry: contains repos where Images are stored, which allows you to share images across teams. \
    Docker also has its own default registry called Docker Hub.
@@ -47,7 +49,8 @@
 
 ## Summary
 
-- Dockerfile creates a Docker Image -> contains all project's code -> any user can run the code in order to create Docker Containers -> once the Image is built, it's uploaded in a Registry or a Docker Hub -> From Docker Hub, users can get the Docker Image and build new containers.
+- Dockerfile -> build -> Docker Image contains all project's code
+  -> run -> Docker Containers -> once the Image is built, it's uploaded in a Registry or a Docker Hub -> From Docker Hub, users can get the Docker Image and build new containers.
 
   ![alt text](image-2.png)
 
@@ -84,7 +87,9 @@ docker stop <the-container-id>
 ```
 
 # More about
+
 Now, let's dive into the basics !!!
+
 ## Running containers
 
 A `docker run` command takes the following form:
@@ -198,7 +203,9 @@ of related container images within a registry.
 
 ### Usage
 
-With Docker Compose, you can define all of your containers and their configurations in a single YAML file.
+With **Docker Compose**, you can define all of your containers and their configurations in a single YAML file.
+
+![alt text](image-14.png)
 
 - `Dockerfile vs Compose file`
 
@@ -239,3 +246,49 @@ With Docker Compose, you can define all of your containers and their configurati
    ![alt text](image-13.png)
 
 ## Building Images
+
+### Understanding the image layers
+
+- Image layer is a change on an image. \
+  Every command you specify (in `Dockerfile`) causes the previous image to change (additions, deletions, or modifications),
+  thus creating a new layer.
+
+- This is beneficial as it allows layers to be reused between images.
+  ![alt text](image-15.png)
+
+- Because layers are **intermediate images**,
+  if you make a change to your `Dockerfile`,
+  docker will rebuild only the layer that
+  was changed and the ones after that.
+  (i.e., `layer caching`)
+
+```
+FROM ubuntu                #This has its own number of layers say "X"
+MAINTAINER FOO             #This is one layer
+RUN mkdir /tmp/foo         #This is one layer
+RUN apt-get install vim    #This is one layer
+
+This will create a final image where the total number of layers will be X+3
+```
+
+### Stacking the layers
+
+1. After each layer is downloaded,
+   it is extracted into its own directory on the
+   host filesystem.
+2. When you run a container from an image,
+   a union filesystem is created where
+   layers are stacked on top of each other,
+   creating a new and unified view.
+3. When the container starts,
+   its root directory is set to the
+   location of this unified directory, using `chroot`.
+   When the union filesystem is created,
+   in addition to the image layers,
+   a directory is created specifically
+   for the running container. \
+   \
+   This allows the container to make filesystem changes
+   while allowing the original image layers to remain untouched.
+   This enables you to run multiple containers from the same underlying image.
+### How to write a Dockerfile?
