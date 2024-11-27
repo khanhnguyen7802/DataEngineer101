@@ -1,5 +1,10 @@
-FROM python:3.9 
+FROM python:3.9.1
 
-RUN pip install pandas 
+RUN apt-get install wget
+RUN pip install pyarrow pandas sqlalchemy psycopg2
 
-ENTRYPOINT ['bash']
+WORKDIR /app
+COPY ingest_data.py ingest_data.py
+
+ENTRYPOINT ["python", "ingest_data.py"]
+

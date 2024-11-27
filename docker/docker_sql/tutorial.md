@@ -58,7 +58,16 @@ conda install conda-forge::pgcli
 
 - Refer to `upload-data.ipynb`.
 
-## Using pdAdmin
+### Errata
+
+1. Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:5432 -> 0.0.0.0:0: listen tcp 0.0.0.0:5432: bind: address already in use. \
+   -> Change the port, example 5434:5432
+
+2. If you still don't see any files in the directory that is created, check permissions for the current user first. Changing the directory to have read permissions by non-owners was required for the files to show up in VSCode. \
+   Granting permissions like this is not recommended unless you are ok with all users being able to read the data.
+   `   sudo chmod -R 744 full/path/to/nyc_taxi/directory`
+
+## Using pgAdmin
 
 We can install pAdmin, however, since we already got Docker, we can just pull an image of the tool and use that.
 
@@ -66,7 +75,7 @@ We can install pAdmin, however, since we already got Docker, we can just pull an
 
 - Access pgAdmin official page for [container](https://hub.docker.com/r/dpage/pgadmin4/).
 
-### 2. Download the image
+### 2. Start the container
 
 The image used is dpage/pgadmin4 and we will start a new container with defined params. All the requests we will send to port 8080 will be forwarded to port 80 on the container.
 
@@ -103,16 +112,44 @@ docker run -it -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" -e PGADMIN_DEFAULT_PAS
 
 After having finished executing, access to pgAdmin on the localhost and register a new server. It should be set up as:
 ![alt text](./img/image2.png)
+The port is 5432 (default of pgAdmin).
 
 ### 4. Wrap up
 
 Eventually, you should be able to create a new server. In this server, you will be able to find the `ny_taxi` database in this server. Also, you can query from the tables.
 
-## Errata
+## Writing script for automation
 
-1. Error response from daemon: Ports are not available: exposing port TCP 0.0.0.0:5432 -> 0.0.0.0:0: listen tcp 0.0.0.0:5432: bind: address already in use. \
-   -> Change the port, example 5434:5432
+Let's say, instead of running each cell in `.ipynb` file to upload the data to Postgres. Now, only by executing the script file with provided params, we can automate those steps (refer to `ingest_data.py`).
 
-2. If you still don't see any files in the directory that is created, check permissions for the current user first. Changing the directory to have read permissions by non-owners was required for the files to show up in VSCode. \
-   Granting permissions like this is not recommended unless you are ok with all users being able to read the data.
-   `   sudo chmod -R 744 full/path/to/nyc_taxi/directory`
+```
+python ingest_data.py --user=root --password=root --host=localhost --port=5434 --db=ny_taxi --table_name=yellow_taxi_data --url='https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet'
+```
+
+Because we are ingesting the data from our local machine, therefore the port specified is **5434** (which maps to port 5432 used for `Postgres`).
+
+## Dockerization the Ingestion Script
+
+Now, we can put everything into a container, such that we only need to run the container to get connected to `Postgres`.
+
+- Create Dockerfile that contains all needed commands to start the pipeline.
+
+  - `FROM`
+  - `RUN`
+  - `WORKDIR`
+  - `COPY`
+  - `ENTRYPOINT`
+
+- Build the Image (it will base on the `Dockerfile` to build the image layers):
+
+  ```
+  docker build -t taxi_ingest:v001 .
+  ```
+
+- Now, we already had the Image, it's time to create a container from it.
+
+  ```
+  docker run -it --network=pg-network taxi_ingest:v001 --user=root --password=root --host=pg-database --port=5432 --db=ny_taxi --table_name=yellow_taxi_data --url='https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet'
+  ```
+
+  explain about the params blabla
