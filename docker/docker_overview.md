@@ -17,7 +17,7 @@
 - A software development platform makes it easy to develop and deploy apps
   inside of neatly packed **virtually containerized environment**. <br>
 
-![VM vs Docker](image.png)
+![VM vs Docker](./img/image.png)
 
 |              |                              VM                               |                            Docker                            |
 | :----------- | :-----------------------------------------------------------: | :----------------------------------------------------------: |
@@ -40,7 +40,7 @@
 4. Registry: contains repos where Images are stored, which allows you to share images across teams. \
    Docker also has its own default registry called Docker Hub.
 
-![alt text](image-1.png)
+![alt text](./img/image-1.png)
 
 ## Basic commands
 
@@ -52,7 +52,7 @@
 - Dockerfile -> build -> Docker Image contains all project's code
   -> run -> Docker Containers -> once the Image is built, it's uploaded in a Registry or a Docker Hub -> From Docker Hub, users can get the Docker Image and build new containers.
 
-  ![alt text](image-2.png)
+  ![alt text](./img/image-2.png)
 
 # Installation
 
@@ -61,7 +61,7 @@
 Download Docker Desktop from their [official page.](https://docs.docker.com/get-started/introduction/get-docker-desktop/) \
 After downloading, run the `.exe` file to set up Docker. \
 After having finished setting up, open terminal, run `docker -v` to make sure Docker is indeed installed.
-![alt text](image-3.png)
+![alt text](./img/image-3.png)
 
 ## Run the first container
 
@@ -71,7 +71,7 @@ Open your CLI terminal and start a container by running the `docker run` command
 docker run -d -p 8080:80 docker/welcome-to-docker
 ```
 
-![alt text](image-4.png)
+![alt text](./img/image-4.png)
 
 For this container, the frontend can be accessed on port 8080. Open via your [localhost](http://localhost:8080).
 
@@ -127,9 +127,9 @@ If an error is encountered for WSL2/Ubuntu (something like
 `Error response from daemon: open \\.\pipe\docker_engine_windows: The system cannot find the file specified docker error`),
 then you may need to adjust in Docker Destop. \
 Go to Docker Desktop -> **Settings** -> tab **Resources** -> **WSL integration** -> turn on the `Ubuntu` option.
-![alt text](image-6.png)
+![alt text](./img/image-6.png)
 Upon running, the terminal shows:
-![alt text](image-7.png)
+![alt text](./img/image-7.png)
 
 Download the image using command `pull`:
 
@@ -137,7 +137,7 @@ Download the image using command `pull`:
 docker pull docker/welcome-to-docker
 ```
 
-![alt text](image-5.png)
+![alt text](./img/image-5.png)
 
 ### Learn about the image
 
@@ -164,7 +164,7 @@ A registry is a centralized location that stores and manages
 container images, whereas a repository is a collection
 of related container images within a registry.
 
-![alt text](image-8.png)
+![alt text](./img/image-8.png)
 
 ### Example
 
@@ -177,7 +177,7 @@ of related container images within a registry.
    ```
    docker build -t <YOUR_DOCKER_USERNAME>/docker-quickstart .
    ```
-   ![alt text](image-9.png)
+   ![alt text](./img/image-9.png)
 4. Use `docker images` to view the newly created Docker Image.
 5. Use the `docker tag` to label the version of Image:
    ```
@@ -189,10 +189,10 @@ of related container images within a registry.
    docker push <YOUR_DOCKER_USERNAME>/docker-quickstart:1.0
    ```
 
-   ![alt text](image-10.png)
+   ![alt text](./img/image-10.png)
 
 7. Go to [Docker Hub](https://hub.docker.com/) to view your Image.
-   ![alt text](image-11.png)
+   ![alt text](./img/image-11.png)
 
 ## Docker Compose
 
@@ -205,7 +205,7 @@ of related container images within a registry.
 
 With **Docker Compose**, you can define all of your containers and their configurations in a single YAML file.
 
-![alt text](image-14.png)
+![alt text](./img/image-14.png)
 
 - `Dockerfile vs Compose file`
 
@@ -229,7 +229,7 @@ With **Docker Compose**, you can define all of your containers and their configu
    docker compose up -d --build
    ```
 
-   ![alt text](image-12.png)
+   ![alt text](./img/image-12.png)
 
    - Two container images were downloaded from Docker Hub - node and MySQL
    - A network was created for your application
@@ -243,7 +243,7 @@ With **Docker Compose**, you can define all of your containers and their configu
    docker compose down
    ```
 
-   ![alt text](image-13.png)
+   ![alt text](./img/image-13.png)
 
 ## Building Images
 
@@ -254,7 +254,7 @@ With **Docker Compose**, you can define all of your containers and their configu
   thus creating a new layer.
 
 - This is beneficial as it allows layers to be reused between images.
-  ![alt text](image-15.png)
+  ![alt text](./img/image-15.png)
 
 - Because layers are **intermediate images**,
   if you make a change to your `Dockerfile`,
@@ -291,4 +291,5 @@ This will create a final image where the total number of layers will be X+3
    This allows the container to make filesystem changes
    while allowing the original image layers to remain untouched.
    This enables you to run multiple containers from the same underlying image.
+
 ### How to write a Dockerfile?
