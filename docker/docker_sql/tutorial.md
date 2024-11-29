@@ -132,13 +132,27 @@ Because we are ingesting the data from our local machine, therefore the port spe
 
 Now, we can put everything into a container, such that we only need to run the container to get connected to `Postgres`.
 
-- Create Dockerfile that contains all needed commands to start the pipeline.
+- Create Dockerfile that contains all needed commands to start the pipeline. This Dockerfile basically builds up an Image (for building the container later on).
 
-  - `FROM`
-  - `RUN`
-  - `WORKDIR`
-  - `COPY`
-  - `ENTRYPOINT`
+  - `FROM <image>`: define a base for the Image. All instructions that follow are executed in this base image (e.g., in the Python environment).
+  - `RUN <command>`: Execute any commands in a new layer on top of the current image and commit the result.  
+  - `WORKDIR <directory>`: Set the working directory for any `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, and `ADD` instructions that follow it in the Dockerfile.
+  - `COPY <src> <dst>`: Copy new files or directories from `<src>` (i.e., from the local build context) and add them to the filesystem of the container at the path `<dest>`.
+  - `ENTRYPOINT>`: specify default executables; works similar to `CMD`, but it does not allow to override the command.
+    - Shell form: `ENTRYPOINT command param1 param2`
+    - Exec form: `ENTRYPOINT ["executable", "param1", "param2"]`
+    <br>
+
+    **Example 1:** `ENTRYPOINT ["python", "app.py"]`: when this container starts, it launches a Python interpreter and executes the `app.py` script to act as your container’s default behavior. 
+    <br>
+    **Example 2 (combine with CMD):** By combining with `CMD`, we are able to override the parameters passed. 
+    ```
+    ENTRYPOINT ["python", "app.py"]
+    CMD ["--help"]
+    ```  
+    In this example, no command line args = executing `python app.py --help` by default. However, if you provide arguments (e.g., `docker run <image> --version`), then it will result in `python app.py --version`.   
+  - `CMD <command>`: Let you define what command the container should execute when launched. Each Dockerfile only has one CMD, and only the **last** CMD instance is respected when multiple exist.
+
 
 - Build the Image (it will base on the `Dockerfile` to build the image layers):
 
@@ -152,4 +166,4 @@ Now, we can put everything into a container, such that we only need to run the c
   docker run -it --network=pg-network taxi_ingest:v001 --user=root --password=root --host=pg-database --port=5432 --db=ny_taxi --table_name=yellow_taxi_data --url='https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet'
   ```
 
-  explain about the params blabla
+## Docker Compose
