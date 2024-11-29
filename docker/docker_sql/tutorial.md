@@ -88,10 +88,11 @@ Now, access pgAdmin via [link](http://localhost:8080).
 ### 3. Connect the database to pgAdmin
 
 - We are now facing the problem when trying to make connection, because we are running the pgAdmin inside a container, and localhost inside the container is trying to find postgresql. \
-  Of course it cannot find because postgres is running in a different container. So, how do we actually connect it? \
+  Of course it cannot find because postgres is running in a different container. So, how do we actually connect it? 
+  
+  -> Connect those 2 containers using a network. 
 
--> Connect those 2 containers using a network. \
-\
+
 First, open the terminal and create the network:
 
 ```
@@ -167,3 +168,14 @@ Now, we can put everything into a container, such that we only need to run the c
   ```
 
 ## Docker Compose
+Instead of running 2 separate terminals for `Postgres` and `pgadmin`, we can define those in a same `compose.yaml` file, so that when `compose.yaml` is executed, the 2 services will also start. \
+Refer to `compose.yaml` file for more information. \
+Go to the working directory, open terminal and run: 
+```
+docker compose up
+```
+- `-d` flag for detached -> terminal will not be hung up due to execution and you can freely type in terminal. 
+- To close the `compose`, run: 
+```
+docker compose down 
+```
