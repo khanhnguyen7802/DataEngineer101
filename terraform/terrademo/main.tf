@@ -9,14 +9,14 @@ terraform {
 
 provider "google" {
   # Configuration options
-  credentials = "./keys/my-creds.json"
-  project     = "potent-well-443419-e3"
-  region      = "us-central1"
+  credentials = file(var.credentials)
+  project     = var.project
+  region      = var.region
 }
 
 resource "google_storage_bucket" "demo-bucket" {
-  name          = "potent-well-443419-e3-terra-bucket" # has to be globally unique 
-  location      = "US"
+  name          = var.gcs_bucket_name # has to be globally unique 
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -27,4 +27,9 @@ resource "google_storage_bucket" "demo-bucket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location = var.location
 }
