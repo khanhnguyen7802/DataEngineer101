@@ -1,0 +1,29 @@
+[2025-01-10T10:02:29.726+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-10T10:02:29.777+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: example_bash_decorator.runme_0 manual__2025-01-10T10:02:26.491835+00:00 [queued]>
+[2025-01-10T10:02:29.812+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: example_bash_decorator.runme_0 manual__2025-01-10T10:02:26.491835+00:00 [queued]>
+[2025-01-10T10:02:29.817+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2025-01-10T10:02:29.881+0000] {taskinstance.py:2889} INFO - Executing <Task(_BashDecoratedOperator): runme_0> on 2025-01-10 10:02:26.491835+00:00
+[2025-01-10T10:02:29.909+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'example_bash_decorator', 'runme_0', 'manual__2025-01-10T10:02:26.491835+00:00', '--job-id', '28', '--raw', '--subdir', '/home/***/.local/lib/python3.12/site-packages/***/example_dags/example_bash_decorator.py', '--cfg-path', '/tmp/tmpbqwnecjs']
+[2025-01-10T10:02:29.913+0000] {standard_task_runner.py:105} INFO - Job 28: Subtask runme_0
+[2025-01-10T10:02:29.921+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=7961) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-10T10:02:29.923+0000] {standard_task_runner.py:72} INFO - Started process 8004 to run task
+[2025-01-10T10:02:30.066+0000] {task_command.py:467} INFO - Running <TaskInstance: example_bash_decorator.runme_0 manual__2025-01-10T10:02:26.491835+00:00 [running]> on host f99ce696fe80
+[2025-01-10T10:02:30.313+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='example_bash_decorator' AIRFLOW_CTX_TASK_ID='runme_0' AIRFLOW_CTX_EXECUTION_DATE='2025-01-10T10:02:26.491835+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-01-10T10:02:26.491835+00:00'
+[2025-01-10T10:02:30.317+0000] {logging_mixin.py:190} INFO - Task instance is in running state
+[2025-01-10T10:02:30.319+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: queued
+[2025-01-10T10:02:30.328+0000] {logging_mixin.py:190} INFO - Current task name:runme_0 state:running start_date:2025-01-10 10:02:29.782880+00:00
+[2025-01-10T10:02:30.330+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator and current dag run status:running
+[2025-01-10T10:02:30.331+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-10T10:02:30.399+0000] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2025-01-10T10:02:30.405+0000] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', 'echo example_bash_decorator__runme_0__20250110 && sleep 0']
+[2025-01-10T10:02:30.451+0000] {subprocess.py:99} INFO - Output:
+[2025-01-10T10:02:30.461+0000] {subprocess.py:106} INFO - example_bash_decorator__runme_0__20250110
+[2025-01-10T10:02:30.467+0000] {subprocess.py:110} INFO - Command exited with return code 0
+[2025-01-10T10:02:30.534+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-10T10:02:30.535+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=example_bash_decorator, task_id=runme_0, run_id=manual__2025-01-10T10:02:26.491835+00:00, execution_date=20250110T100226, start_date=20250110T100229, end_date=20250110T100230
+[2025-01-10T10:02:30.565+0000] {logging_mixin.py:190} INFO - Task instance in success state
+[2025-01-10T10:02:30.570+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: running
+[2025-01-10T10:02:30.571+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator queued_at:2025-01-10 10:02:26.511358+00:00
+[2025-01-10T10:02:30.572+0000] {logging_mixin.py:190} INFO - Task hostname:f99ce696fe80 operator:_BashDecoratedOperator
+[2025-01-10T10:02:30.638+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-10T10:02:30.665+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

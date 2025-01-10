@@ -1,0 +1,28 @@
+[2025-01-10T10:02:55.369+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-10T10:02:55.441+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: example_bash_decorator.make_dynamic_dirs manual__2025-01-10T10:01:12.886807+00:00 [queued]>
+[2025-01-10T10:02:55.479+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: example_bash_decorator.make_dynamic_dirs manual__2025-01-10T10:01:12.886807+00:00 [queued]>
+[2025-01-10T10:02:55.483+0000] {taskinstance.py:2866} INFO - Starting attempt 2 of 2
+[2025-01-10T10:02:55.530+0000] {taskinstance.py:2889} INFO - Executing <Task(_BashDecoratedOperator): make_dynamic_dirs> on 2025-01-10 10:01:12.886807+00:00
+[2025-01-10T10:02:55.555+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=8294) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-10T10:02:55.558+0000] {standard_task_runner.py:72} INFO - Started process 8301 to run task
+[2025-01-10T10:02:55.555+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'example_bash_decorator', 'make_dynamic_dirs', 'manual__2025-01-10T10:01:12.886807+00:00', '--job-id', '34', '--raw', '--subdir', '/home/***/.local/lib/python3.12/site-packages/***/example_dags/example_bash_decorator.py', '--cfg-path', '/tmp/tmp0b_qfjl2']
+[2025-01-10T10:02:55.568+0000] {standard_task_runner.py:105} INFO - Job 34: Subtask make_dynamic_dirs
+[2025-01-10T10:02:55.697+0000] {task_command.py:467} INFO - Running <TaskInstance: example_bash_decorator.make_dynamic_dirs manual__2025-01-10T10:01:12.886807+00:00 [running]> on host f99ce696fe80
+[2025-01-10T10:02:55.905+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='example_bash_decorator' AIRFLOW_CTX_TASK_ID='make_dynamic_dirs' AIRFLOW_CTX_EXECUTION_DATE='2025-01-10T10:01:12.886807+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-01-10T10:01:12.886807+00:00'
+[2025-01-10T10:02:55.908+0000] {logging_mixin.py:190} INFO - Task instance is in running state
+[2025-01-10T10:02:55.909+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: queued
+[2025-01-10T10:02:55.912+0000] {logging_mixin.py:190} INFO - Current task name:make_dynamic_dirs state:running start_date:2025-01-10 10:02:55.447236+00:00
+[2025-01-10T10:02:55.913+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator and current dag run status:running
+[2025-01-10T10:02:55.914+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-10T10:02:55.971+0000] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2025-01-10T10:02:55.975+0000] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', 'mkdir -p $AIRFLOW_HOME/$BASE_DIR/foo/bar/baz']
+[2025-01-10T10:02:56.010+0000] {subprocess.py:99} INFO - Output:
+[2025-01-10T10:02:56.018+0000] {subprocess.py:110} INFO - Command exited with return code 0
+[2025-01-10T10:02:56.075+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-10T10:02:56.076+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=example_bash_decorator, task_id=make_dynamic_dirs, run_id=manual__2025-01-10T10:01:12.886807+00:00, execution_date=20250110T100112, start_date=20250110T100255, end_date=20250110T100256
+[2025-01-10T10:02:56.100+0000] {logging_mixin.py:190} INFO - Task instance in success state
+[2025-01-10T10:02:56.102+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: running
+[2025-01-10T10:02:56.103+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator queued_at:2025-01-10 10:02:52.663579+00:00
+[2025-01-10T10:02:56.104+0000] {logging_mixin.py:190} INFO - Task hostname:f99ce696fe80 operator:_BashDecoratedOperator
+[2025-01-10T10:02:56.151+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-10T10:02:56.169+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

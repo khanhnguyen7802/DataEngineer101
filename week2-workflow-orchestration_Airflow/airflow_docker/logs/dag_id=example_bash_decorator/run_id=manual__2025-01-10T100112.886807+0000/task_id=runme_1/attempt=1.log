@@ -1,0 +1,30 @@
+[2025-01-10T10:01:17.201+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-10T10:01:17.247+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: example_bash_decorator.runme_1 manual__2025-01-10T10:01:12.886807+00:00 [queued]>
+[2025-01-10T10:01:17.269+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: example_bash_decorator.runme_1 manual__2025-01-10T10:01:12.886807+00:00 [queued]>
+[2025-01-10T10:01:17.270+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2025-01-10T10:01:17.315+0000] {taskinstance.py:2889} INFO - Executing <Task(_BashDecoratedOperator): runme_1> on 2025-01-10 10:01:12.886807+00:00
+[2025-01-10T10:01:17.364+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=7288) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-10T10:01:17.373+0000] {standard_task_runner.py:72} INFO - Started process 7299 to run task
+[2025-01-10T10:01:17.372+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'example_bash_decorator', 'runme_1', 'manual__2025-01-10T10:01:12.886807+00:00', '--job-id', '3', '--raw', '--subdir', '/home/***/.local/lib/python3.12/site-packages/***/example_dags/example_bash_decorator.py', '--cfg-path', '/tmp/tmpvqu4ia0j']
+[2025-01-10T10:01:17.379+0000] {standard_task_runner.py:105} INFO - Job 3: Subtask runme_1
+[2025-01-10T10:01:17.693+0000] {task_command.py:467} INFO - Running <TaskInstance: example_bash_decorator.runme_1 manual__2025-01-10T10:01:12.886807+00:00 [running]> on host f99ce696fe80
+[2025-01-10T10:01:17.966+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='example_bash_decorator' AIRFLOW_CTX_TASK_ID='runme_1' AIRFLOW_CTX_EXECUTION_DATE='2025-01-10T10:01:12.886807+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-01-10T10:01:12.886807+00:00'
+[2025-01-10T10:01:17.970+0000] {logging_mixin.py:190} INFO - Task instance is in running state
+[2025-01-10T10:01:17.971+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: queued
+[2025-01-10T10:01:17.973+0000] {logging_mixin.py:190} INFO - Current task name:runme_1 state:running start_date:2025-01-10 10:01:17.249129+00:00
+[2025-01-10T10:01:17.974+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator and current dag run status:running
+[2025-01-10T10:01:17.975+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-10T10:01:18.022+0000] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2025-01-10T10:01:18.025+0000] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', 'echo example_bash_decorator__runme_1__20250110 && sleep 1']
+[2025-01-10T10:01:18.068+0000] {subprocess.py:99} INFO - Output:
+[2025-01-10T10:01:18.074+0000] {subprocess.py:106} INFO - example_bash_decorator__runme_1__20250110
+[2025-01-10T10:01:19.080+0000] {subprocess.py:110} INFO - Command exited with return code 0
+[2025-01-10T10:01:19.109+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-10T10:01:19.110+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=example_bash_decorator, task_id=runme_1, run_id=manual__2025-01-10T10:01:12.886807+00:00, execution_date=20250110T100112, start_date=20250110T100117, end_date=20250110T100119
+[2025-01-10T10:01:19.121+0000] {logging_mixin.py:190} INFO - Task instance in success state
+[2025-01-10T10:01:19.122+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: running
+[2025-01-10T10:01:19.123+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator queued_at:2025-01-10 10:01:12.906719+00:00
+[2025-01-10T10:01:19.123+0000] {logging_mixin.py:190} INFO - Task hostname:f99ce696fe80 operator:_BashDecoratedOperator
+[2025-01-10T10:01:19.148+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-10T10:01:19.171+0000] {taskinstance.py:3895} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-01-10T10:01:19.174+0000] {local_task_job_runner.py:245} INFO - ::endgroup::

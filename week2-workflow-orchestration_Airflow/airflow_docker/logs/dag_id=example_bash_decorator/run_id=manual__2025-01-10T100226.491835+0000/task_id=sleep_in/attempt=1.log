@@ -1,0 +1,22 @@
+[2025-01-10T10:02:29.599+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-10T10:02:29.644+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: example_bash_decorator.sleep_in manual__2025-01-10T10:02:26.491835+00:00 [queued]>
+[2025-01-10T10:02:29.664+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: example_bash_decorator.sleep_in manual__2025-01-10T10:02:26.491835+00:00 [queued]>
+[2025-01-10T10:02:29.665+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 1
+[2025-01-10T10:02:29.706+0000] {taskinstance.py:2889} INFO - Executing <Task(_BashDecoratedOperator): sleep_in> on 2025-01-10 10:02:26.491835+00:00
+[2025-01-10T10:02:29.731+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'example_bash_decorator', 'sleep_in', 'manual__2025-01-10T10:02:26.491835+00:00', '--job-id', '25', '--raw', '--subdir', '/home/***/.local/lib/python3.12/site-packages/***/example_dags/example_bash_decorator.py', '--cfg-path', '/tmp/tmp6rjj9ks8']
+[2025-01-10T10:02:29.735+0000] {standard_task_runner.py:105} INFO - Job 25: Subtask sleep_in
+[2025-01-10T10:02:29.741+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=7964) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-10T10:02:29.747+0000] {standard_task_runner.py:72} INFO - Started process 7988 to run task
+[2025-01-10T10:02:29.908+0000] {task_command.py:467} INFO - Running <TaskInstance: example_bash_decorator.sleep_in manual__2025-01-10T10:02:26.491835+00:00 [running]> on host f99ce696fe80
+[2025-01-10T10:02:30.168+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='example_bash_decorator' AIRFLOW_CTX_TASK_ID='sleep_in' AIRFLOW_CTX_EXECUTION_DATE='2025-01-10T10:02:26.491835+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-01-10T10:02:26.491835+00:00'
+[2025-01-10T10:02:30.172+0000] {logging_mixin.py:190} INFO - Task instance is in running state
+[2025-01-10T10:02:30.173+0000] {logging_mixin.py:190} INFO -  Previous state of the Task instance: queued
+[2025-01-10T10:02:30.175+0000] {logging_mixin.py:190} INFO - Current task name:sleep_in state:running start_date:2025-01-10 10:02:29.645820+00:00
+[2025-01-10T10:02:30.175+0000] {logging_mixin.py:190} INFO - Dag name:example_bash_decorator and current dag run status:running
+[2025-01-10T10:02:30.176+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-10T10:02:30.178+0000] {taskinstance.py:301} INFO - No sleeping in today!
+[2025-01-10T10:02:30.214+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-10T10:02:30.219+0000] {taskinstance.py:352} INFO - Marking task as SKIPPED. dag_id=example_bash_decorator, task_id=sleep_in, run_id=manual__2025-01-10T10:02:26.491835+00:00, execution_date=20250110T100226, start_date=20250110T100229, end_date=20250110T100230
+[2025-01-10T10:02:30.333+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-10T10:02:30.394+0000] {taskinstance.py:3895} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-01-10T10:02:30.401+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
