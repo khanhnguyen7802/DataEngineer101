@@ -1,6 +1,0 @@
-[submodule "docker/test/helloworld-demo-node"]
-	path = docker/test/helloworld-demo-node
-	url = https://github.com/dockersamples/helloworld-demo-node.git
-[submodule "docker/test/todo-list-app"]
-	path = docker/test/todo-list-app
-	url = https://github.com/dockersamples/todo-list-app.git
