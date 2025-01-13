@@ -8,10 +8,18 @@
 
 |              |                        Data Lake                        |         Data Warehouse         |
 | :----------- | :-----------------------------------------------------: | :----------------------------: |
-| Data         |                 Unstructured, huge size                 |     Structured, small size     |
+| Data         |                 Unstructured, huge size                 |     Structured, might have been summarized from on-prem db (OLAP) for faster summary; small size     |
 | Target users |            Data Scientists or Data Analysts             |       Business Analysts        |
 | Use cases    | Stream processing, Machine learning, Real time analysis | Batch processing, BI reporting |
 |              |
+
+
+## Transactional Data Lake 
+- store data at scale 
+- support transactional operations 
+- ensure that data is accurate, consistent (ACID)
+- allow you to track how data and data structure 
+changes over time (ACID)
 
 ## How did Data Lake start?
 
@@ -33,7 +41,6 @@
 - Mainly used for large amounts of data
 - Provides Data Lake support (schema on read)
 
-
 # What is orchestration?
 
 - Is the automated configuration, coordination and management of multiple computer systems, applications and/or services stringing together multiple tasks to execute a larger workflow/process.
@@ -47,6 +54,7 @@
 # Apache Airflow
 
 ## About
+
 - Starts in Airbnb 2014
 - Open-source platform for developing, scheduling, and monitoring batch-oriented workflows
 - Extends from Python framework
@@ -96,33 +104,63 @@
   Initialization to create the first user account:
 
   ```
-  docker compose up airflow-init
+  docker compose up airflow-init -d
   ```
 
-  Step 4: after composing, run `docker-compose up -d` to start the container
+  Step 5: to start all services, run:
+  ```
+  docker compose up
+  ``` 
 
-  Step 5: access [localhost](http://localhost:8080/) to view the Airflow tasks.
+  Step 6: after have composed, access [localhost](http://localhost:8080/) to view the Airflow tasks.
 
 # Airflow Core Concepts
-- Workflow is a sequence of tasks, and in Airflow, it is called `DAG - Directed Acyclic Graph`. DAG is your data pipeline and represents a set of instructions that must be completed in a specific order. 
-  - Once a task is done, it cannot be returned back to the previous ones. 
-- `DAG Dependencies` ensure  that your data tasks are executed in the same order every time, making them reliable for your everyday data infrastructure. 
+
+- Workflow is a sequence of tasks, and in Airflow, it is called `DAG - Directed Acyclic Graph`. DAG is your data pipeline and represents a set of instructions that must be completed in a specific order.
+  - Once a task is done, it cannot be returned back to the previous ones.
+- `DAG Dependencies` ensure that your data tasks are executed in the same order every time, making them reliable for your everyday data infrastructure.
 - The `graphing component of DAGs` allows you to visualize dependencies in Airflow’s user interface.
-- `Operators` are the building blocks of Airflow. They contain the logic of how data is processed in a pipeline. 
+- `Operators` are the building blocks of Airflow. They contain the logic of how data is processed in a pipeline.
   - `Action Operators` execute pieces of code. E.g., a Python action operator will run a Python function.
-  - `Transfer Operator`: more specialized | to move data from one place to another. 
-  - `Sensor Operators` (or `sensors`), are designed to wait for something to happen. E.g., wait for another DAG to finish running. 
+  - `Transfer Operator`: more specialized | to move data from one place to another.
+  - `Sensor Operators` (or `sensors`), are designed to wait for something to happen. E.g., wait for another DAG to finish running.
 
-When you create an instance of an operator in a DAG and provide it with its required parameters, it becomes a `task`. 
+When you create an instance of an operator in a DAG and provide it with its required parameters, it becomes a `task`.
+
 - `Task`: is an instance of an operator. Each task in a DAG is defined by instantiating an operator.
-![alt text](image-1.png)
+  ![alt text](image-1.png)
 
-# Airflow Infrastructure Components 
-1. `webserver`: Flask server running with Gunicorn serving the UI 
+# Airflow Infrastructure Components
+
+1. `webserver`: Flask server running with Gunicorn serving the UI
 2. `scheduler`: Daemon responsible for scheduling jobs
-3. `metastore`: a database where all metadata is stored 
-4. `executor`: **defines** how `tasks` are executed 
+3. `metastore`: a database where all metadata is stored
+4. `executor`: **defines** how `tasks` are executed
 5. `worker`: process **executing** the tasks, defined by the `executor`
-6.  `triggerer`: process running **asyncio** to support deferrable operators
-=> The first four components below run at all times,
-and the last two are situational components that are used only to run tasks or make use of certain features.
+6. `triggerer`: process running **asyncio** to support deferrable operators
+   => The first four components below run at all times,
+   and the last two are situational components that are used only to run tasks or make use of certain features.
+   ![alt text](image-3.png)
+
+# Task life cycle
+
+## A happy workflow execution process
+
+![alt text](image-2.png)
+
+# Our first DAG
+## Different operators
+
+- Step 1: Open Aiflow using Docker again.
+
+```
+docker compose up airflow-init -d
+```
+
+- Step 2: access [localhost:8080](http://localhost:8080/). Since there were automatically loaded DAG examples, we will (temporarily) remove them by opening [docker-compose.yaml file](./airflow_docker/docker-compose.yaml) and set `AIRFLOW__CORE__LOAD_EXAMPLES: "false"`. \
+  Then, re-compose Airflow.
+
+- Step 3: Write a `DAG`. Airflow DAG is defined as a Python file under the [dags folder](./airflow_docker/dags/). 
+
+#### Note:
+Refer to files containing corresponding operators. 

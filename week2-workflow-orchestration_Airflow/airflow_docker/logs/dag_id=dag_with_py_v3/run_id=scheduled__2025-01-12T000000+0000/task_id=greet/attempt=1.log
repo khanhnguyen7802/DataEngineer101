@@ -1,0 +1,37 @@
+[2025-01-13T02:00:58.904+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-13T02:00:58.935+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [queued]>
+[2025-01-13T02:00:58.954+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [queued]>
+[2025-01-13T02:00:58.956+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 6
+[2025-01-13T02:00:58.982+0000] {taskinstance.py:2889} INFO - Executing <Task(PythonOperator): greet> on 2025-01-12 00:00:00+00:00
+[2025-01-13T02:00:58.999+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'dag_with_py_v3', 'greet', 'scheduled__2025-01-12T00:00:00+00:00', '--job-id', '87', '--raw', '--subdir', 'DAGS_FOLDER/dag_python.py', '--cfg-path', '/tmp/tmpy9_rp3hj']
+[2025-01-13T02:00:59.003+0000] {standard_task_runner.py:105} INFO - Job 87: Subtask greet
+[2025-01-13T02:00:59.008+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=2100) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-13T02:00:59.010+0000] {standard_task_runner.py:72} INFO - Started process 2107 to run task
+[2025-01-13T02:00:59.087+0000] {task_command.py:467} INFO - Running <TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [running]> on host a726eb716cdf
+[2025-01-13T02:00:59.244+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Khanh' AIRFLOW_CTX_DAG_ID='dag_with_py_v3' AIRFLOW_CTX_TASK_ID='greet' AIRFLOW_CTX_EXECUTION_DATE='2025-01-12T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-01-12T00:00:00+00:00'
+[2025-01-13T02:00:59.246+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-13T02:00:59.278+0000] {logging_mixin.py:190} INFO - Hello World! My name is Khanh and I am 20 years old.
+[2025-01-13T02:00:59.279+0000] {python.py:240} INFO - Done. Returned value was: None
+[2025-01-13T02:00:59.297+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-13T02:00:59.298+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=dag_with_py_v3, task_id=greet, run_id=scheduled__2025-01-12T00:00:00+00:00, execution_date=20250112T000000, start_date=20250113T020058, end_date=20250113T020059
+[2025-01-13T02:00:59.352+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-13T02:00:59.391+0000] {taskinstance.py:3895} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2025-01-13T02:00:59.395+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
+[2025-01-13T02:03:40.606+0000] {local_task_job_runner.py:123} INFO - ::group::Pre task execution logs
+[2025-01-13T02:03:40.636+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [queued]>
+[2025-01-13T02:03:40.650+0000] {taskinstance.py:2613} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [queued]>
+[2025-01-13T02:03:40.651+0000] {taskinstance.py:2866} INFO - Starting attempt 1 of 6
+[2025-01-13T02:03:40.673+0000] {taskinstance.py:2889} INFO - Executing <Task(PythonOperator): greet> on 2025-01-12 00:00:00+00:00
+[2025-01-13T02:03:40.686+0000] {standard_task_runner.py:104} INFO - Running: ['***', 'tasks', 'run', 'dag_with_py_v3', 'greet', 'scheduled__2025-01-12T00:00:00+00:00', '--job-id', '98', '--raw', '--subdir', 'DAGS_FOLDER/dag_python.py', '--cfg-path', '/tmp/tmp1glsszqh']
+[2025-01-13T02:03:40.690+0000] {standard_task_runner.py:105} INFO - Job 98: Subtask greet
+[2025-01-13T02:03:40.694+0000] {logging_mixin.py:190} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:70 DeprecationWarning: This process (pid=2273) is multi-threaded, use of fork() may lead to deadlocks in the child.
+[2025-01-13T02:03:40.695+0000] {standard_task_runner.py:72} INFO - Started process 2279 to run task
+[2025-01-13T02:03:40.760+0000] {task_command.py:467} INFO - Running <TaskInstance: dag_with_py_v3.greet scheduled__2025-01-12T00:00:00+00:00 [running]> on host a726eb716cdf
+[2025-01-13T02:03:40.883+0000] {taskinstance.py:3132} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='Khanh' AIRFLOW_CTX_DAG_ID='dag_with_py_v3' AIRFLOW_CTX_TASK_ID='greet' AIRFLOW_CTX_EXECUTION_DATE='2025-01-12T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-01-12T00:00:00+00:00'
+[2025-01-13T02:03:40.884+0000] {taskinstance.py:731} INFO - ::endgroup::
+[2025-01-13T02:03:40.912+0000] {logging_mixin.py:190} INFO - Hello World! My name is Khanh and I am 20 years old.
+[2025-01-13T02:03:40.913+0000] {python.py:240} INFO - Done. Returned value was: None
+[2025-01-13T02:03:40.933+0000] {taskinstance.py:340} INFO - ::group::Post task execution logs
+[2025-01-13T02:03:40.934+0000] {taskinstance.py:352} INFO - Marking task as SUCCESS. dag_id=dag_with_py_v3, task_id=greet, run_id=scheduled__2025-01-12T00:00:00+00:00, execution_date=20250112T000000, start_date=20250113T020340, end_date=20250113T020340
+[2025-01-13T02:03:40.995+0000] {local_task_job_runner.py:266} INFO - Task exited with return code 0
+[2025-01-13T02:03:41.009+0000] {local_task_job_runner.py:245} INFO - ::endgroup::
