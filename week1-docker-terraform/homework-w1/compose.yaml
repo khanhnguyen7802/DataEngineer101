@@ -1,0 +1,33 @@
+services:
+  pgdatabase: # name of the service (aka hostname)
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=green_trip
+    volumes: # for mounting
+      - "./green_trip_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5434:5432"
+    networks:
+      - pg-network
+
+  pgadmin: # name of the service
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes: # in order to keep tables persistent among connections
+      - "pgadmin_conn_data:/var/lib/pgadmin:rw"
+    ports:
+      - "8080:80"
+    networks:
+      - pg-network
+
+networks: # we need to define a pre-existing network; otherwise docker will create a new default one 
+  pg-network:
+    external: 
+      name: pg-network
+
+volumes:
+  pgadmin_conn_data:
