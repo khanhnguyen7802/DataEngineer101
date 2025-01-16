@@ -1,5 +1,5 @@
 services:
-  pgdatabase: # name of the service
+  pgdatabase: # name of the service (aka hostname)
     image: postgres:13
     environment:
       - POSTGRES_USER=root

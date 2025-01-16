@@ -83,7 +83,7 @@ The image used is dpage/pgadmin4 and we will start a new container with defined 
 docker run -it -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" -e PGADMIN_DEFAULT_PASSWORD="root" -p 8080:80 dpage/pgadmin4
 ```
 
-Now, access pgAdmin via [link](http://localhost:8080).
+Now, access pgAdmin via [localhost:8080](http://localhost:8080).
 
 ### 3. Connect the database to pgAdmin
 
@@ -119,7 +119,7 @@ The port is 5432 (default of pgAdmin).
 
 Eventually, you should be able to create a new server. In this server, you will be able to find the `ny_taxi` database in this server. Also, you can query from the tables.
 
-## Writing script for automation
+## Writing script for automation (alternative)
 
 Let's say, instead of running each cell in `.ipynb` file to upload the data to Postgres. Now, only by executing the script file with provided params, we can automate those steps (refer to `ingest_data.py`).
 
