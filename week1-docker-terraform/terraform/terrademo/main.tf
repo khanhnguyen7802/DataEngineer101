@@ -9,7 +9,7 @@ terraform {
 
 provider "google" {
   # Configuration options
-  credentials = file(var.credentials)
+  credentials = file(var.credentials) // load the content in the file
   project     = var.project
   region      = var.region
 }
