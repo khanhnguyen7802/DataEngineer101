@@ -63,6 +63,7 @@
       User khanh
       IdentityFile C:/Users/KhanhNguyen/.ssh/gcp
     ```
+    However, after shutting down, the VM will have a new different `internal_ip`, so you will need to update again.
   - Step 4.3: Now, you can ssh using only the Host
 
     ```
