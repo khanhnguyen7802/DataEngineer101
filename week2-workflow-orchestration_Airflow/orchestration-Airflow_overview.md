@@ -6,20 +6,20 @@
   to other team members.
 - Generally associate some sort of metadata for faster access
 
-|              |                        Data Lake                        |         Data Warehouse         |
-| :----------- | :-----------------------------------------------------: | :----------------------------: |
-| Data         |                 Unstructured, huge size                 |     Structured, might have been summarized from on-prem db (OLAP) for faster summary; small size     |
-| Target users |            Data Scientists or Data Analysts             |       Business Analysts        |
-| Use cases    | Stream processing, Machine learning, Real time analysis | Batch processing, BI reporting |
+|              |                        Data Lake                        |                                        Data Warehouse                                        |
+| :----------- | :-----------------------------------------------------: | :------------------------------------------------------------------------------------------: |
+| Data         |                 Unstructured, huge size                 | Structured, might have been summarized from on-prem db (OLAP) for faster summary; small size |
+| Target users |            Data Scientists or Data Analysts             |                                      Business Analysts                                       |
+| Use cases    | Stream processing, Machine learning, Real time analysis |                                Batch processing, BI reporting                                |
 |              |
 
+## Transactional Data Lake
 
-## Transactional Data Lake 
-- store data at scale 
-- support transactional operations 
+- store data at scale
+- support transactional operations
 - ensure that data is accurate, consistent (ACID)
-- allow you to track how data and data structure 
-changes over time (ACID)
+- allow you to track how data and data structure
+  changes over time (ACID)
 
 ## How did Data Lake start?
 
@@ -108,9 +108,10 @@ changes over time (ACID)
   ```
 
   Step 5: to start all services, run:
+
   ```
   docker compose up
-  ``` 
+  ```
 
   Step 6: after have composed, access [localhost](http://localhost:8080/) to view the Airflow tasks.
 
@@ -138,9 +139,11 @@ When you create an instance of an operator in a DAG and provide it with its requ
 4. `executor`: **defines** how `tasks` are executed
 5. `worker`: process **executing** the tasks, defined by the `executor`
 6. `triggerer`: process running **asyncio** to support deferrable operators
-   => The first four components below run at all times,
-   and the last two are situational components that are used only to run tasks or make use of certain features.
-   ![alt text](image-3.png)
+
+=> The first four components below run at all times,
+and the last two are situational components that are used only to run tasks or make use of certain features.
+
+![alt text](image-3.png)
 
 # Task life cycle
 
@@ -149,6 +152,7 @@ When you create an instance of an operator in a DAG and provide it with its requ
 ![alt text](image-2.png)
 
 # Our first DAG
+
 ## Different operators
 
 - Step 1: Open Aiflow using Docker again.
@@ -160,7 +164,109 @@ docker compose up airflow-init -d
 - Step 2: access [localhost:8080](http://localhost:8080/). Since there were automatically loaded DAG examples, we will (temporarily) remove them by opening [docker-compose.yaml file](./airflow_docker/docker-compose.yaml) and set `AIRFLOW__CORE__LOAD_EXAMPLES: "false"`. \
   Then, re-compose Airflow.
 
-- Step 3: Write a `DAG`. Airflow DAG is defined as a Python file under the [dags folder](./airflow_docker/dags/). 
+- Step 3: Write a `DAG`. Airflow DAG is defined as a Python file under the [dags folder](./airflow_docker/dags/).
 
 #### Note:
-Refer to files containing corresponding operators. 
+
+- Refer to files containing corresponding operators.
+- `upstream task`: directly preceding the other task (parent)
+- `downstream task`: direct child of the other task
+
+  E.g., `task1 >> task2` means that task1 is the **upperstream**, which means that task2 can run
+  ${\textbf {\textsf{\color{red}ONLY WHEN task1 has succeeded}}}$
+
+# Ingest data to GCP with Airflow
+In this section, im gonna show how we can **download a dataset**, **ingest the dataset into Bucket on Google Cloud Platform**, and then **put that dataset to BigQuery for querying (and other operations)**. 
+
+## Prerequisites
+- Airflow 
+- Docker 
+- Google Cloud account 
+
+## Complete guide
+### Setting up Cloud environment  
+- Step 1: Access Google Cloud account (create one if you don't have yet) 
+- Step 2: Create a new project. As you have created a new project, you will also have the `project ID` (which will be used later on). 
+![alt text](image-4.png)
+- Step 3: Navigate to `IAM and admin` -> `Service accounts` -> create a Service Account with role **BigQuery Admin** and **Storage Admin** (since we will be working with Buckets and BigQuery). Additionally, if you want to edit the roles (add, remove, update), go to `IAM and admin` -> `IAM` -> adjust roles.
+- Step 4: Add key -> `Create a new key` -> choose the `JSON` option -> Download that file (*that is your credentials*).
+- Step 5: in your workspace, put the *Google Credentials* in such structure: `.google\credentials\google_credentials.json`.
+- Step 6: In Google Cloud, create a Bucket: go to Navigation Menu -> `Cloud Storage` -> `Buckets` -> create a new Bucket. Since the name is **globally unique**, I suggest naming as follow: `<project_id> + <the service using>`. For example, my bucket will be `de-zoomcamp-2025-448114-gcp-bucket`.
+
+### Setting up the local environment 
+Before we dive deep into the actual work, it is always a tedious stuff to set up the initial environment. \
+At this step, I am assuming you already known how to use Airflow and run DAGs (if not, refer to [Our first DAG](#our-first-dag)). \
+Usually, we can create `.env` file to store our variables in the environment. However, in this case, im gonna define the environment variables straight in `docker-compose.yaml` file.
+
+- Step 1: check [docker-compose.yaml for Airflow](./airflow_docker/docker-compose.yaml).
+- Step 2: define additional variables in the environment
+  - `GOOGLE_APPLICATION_CREDENTIALS`: the path that leads to `google_credentials.json`
+  - `AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT` (*optional*)
+  - `GCP_PROJECT_ID`: the project ID 
+  - `GCP_GCS_BUCKET`: the name of the bucket
+
+![alt text](image-5.png)
+ 
+- Step 3: map corresponding volumes.  
+![alt text](image-6.png)
+
+  **Explanation:** `Airflow` is run by using Docker, which means that the **local folders** will have to map to the folders on VM. \
+  By default, the official Airflow Docker image sets the home directory to `/opt/airflow`. You can also validate the path by executing 
+  ```
+  docker inspect -f '{{ .Mounts }}' <container_id>
+  ``` 
+  
+  **How does this volume mapping work?** 
+  
+  --> General syntax: 
+  ```
+  volumes:
+    - [host_path]:[container_path]:[options]
+  ```
+    - `host_path`: The path to the file or directory on the host machine (your local laptop).
+    - `container_path`: The corresponding path inside the Docker container where the volume will be mounted.
+    - `options`: (Optional) Access permissions, such as ro (read-only).
+    
+      <br>
+
+      ${\textbf {\textsf{\color{red}E.g.,}}}$  `~/.google/credentials/:/.google/credentials:ro`
+
+    - `~/.google/credentials/` (*Host Path*): The directory **on your host machine** where Google Cloud credentials are stored (e.g., your service account JSON files).
+        ~ expands to the home directory of the current user.
+    - `/.google/credentials` (*Container Path*): The directory **inside the container** where the credentials will be accessible.
+    - `ro` (*Option*): Specifies that the volume is read-only, preventing the container from modifying the credentials.
+
+
+### Writing DAG 
+Now, we will be writing `DAG` file to execute tasks using Airflow. 
+  - Step 1: import all required libraries and other default args as usual (like normal DAGs)
+  - Step 2: define environment variables in the file (e.g., `PROJECT_ID = os.environ.get("GCP_PROJECT_ID")`)
+  - Step 3: define the tasks: download dataset | ingest the dataset into *Google Cloud Storage* (or **Buckets**) | from GSC load to BigQuery
+
+    ![alt text](image-8.png)
+    <br><br> 
+
+    1. **Download the dataset**: we are using `Bash` to execute the downloading command automatically. Initially, we need to specify the URL of the dataset, after which `curl` is used for download and `>` to direct the downloaded file to another place. Since we are running on `Docker`, the *local* pathby default is `/opt/airflow`. View log in each task to see whether there is any error raised.
+    
+    ![alt text](image-7.png)  
+
+    ![alt text](image-9.png)
+    <br>
+
+    2. **Ingest data into Buckets**: this simply uploads the local file to a target location. \
+    Refer to [dag_gcp-conect.py](./airflow_docker/dags/dag_gcp-connect.py) for more details. 
+
+    ![alt text](image-10.png)
+
+    <br>
+    
+    3.  **From Buckets to BigQuery**: As we already had the `parquet` file in Buckets, we will turn this into a `schema` in `BigQuery`. Therefore, before moving the dataset into `BigQuery`, we have to create an **empty dataset** (serves as a placeholder) first, and then can actually load to `BigQuery`. 
+    <br>
+    We can create the empty dataset straight on UI of Google Cloud Platform, however, I will make everything automatic. 
+
+    ![alt text](image-11.png)
+    ---
+    ![alt text](image-12.png)
+
+  - Step 4: VOILA !!! YOU HAVE DONE !!!
+  <br> Now you can go to `BigQuery studio` on GCP to see your new data schema and from here, you can do whatever queries you want to.
