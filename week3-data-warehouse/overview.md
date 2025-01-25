@@ -37,6 +37,9 @@
 ## Partitioning
 
 - More efficient when working with partitioned tables as we only need to scan **\*WAY MORE LESS** data than usual
+- Time-unit column
+- Integer range partitioning
+- Number of partition limits is **4000**
 
 ![alt text](image-1.png)
 
@@ -59,8 +62,12 @@
       require_partition_filter = TRUE);
   ```
 
-  ## Clustering
+## Clustering
 
+- Order of the column is important, because this is the order which specifies **sort order** of the data.
+- Clustering improves _filter queries_ and _aggregate queries_.
+- Can specify up to 4 clustering columns
+- Clustering columns must be **top-level, non-repeated columns**.
   ![alt text](image-2.png)
 
 - To query with clusters, use:
@@ -79,3 +86,9 @@
     SELECT * FROM mydataset.unclustered_table
   );
   ```
+
+## Summary
+
+- `Partitioning`: reduces the **scope of data scanned** by breaking the table into chunks (e.g., by _date_ or _range_).
+- `Clustering`: reduces the **amount of work within each chunk** by pre-sorting and organizing rows.
+
