@@ -182,3 +182,168 @@
   %fs
   ls
   ```
+
+# Databricks Utilities
+
+## File system utilities
+
+- To see what contents we have in a Folder, use the command:
+
+  ```
+  dbutils.fs.ls('<folder_path>')
+  ```
+
+  This will output as a **Python list**.
+
+- To get help with any method in this package:
+  ```
+  dbutils.fs.help('<name_of_method>')
+  ```
+
+# Azure Data Lake
+
+## Accessing Azure Data Lake from Databricks
+
+- In Databricks, we generally use Azure Data Lake Storage Gen 2 as the Data Lake Storage solution.
+
+  ### Create Storage Account
+
+  - Step 1: go to Azure Portal -> Create new resource -> Search for _Storage Account_ -> Create
+  - Step 2: fill in the form for creation. The setting should be similar to the below images. Everything else can be set _by default_.
+    ![alt text](image-5.png)
+    ![alt text](image-6.png)
+  - Step 3: Deploy the resource
+  - Step 4: after deployment, click `Go to resource` to go to the `Storage Account`. Then, on the left menu, cick on tab `Data Storage` -> `Containers`. In this project, we are having 3 containers called: **raw, processed and presentation** (~ equivalent to bronze, silver and gold).
+  - Step 5: create the 3 containers.
+    ![alt text](image-7.png)
+
+## Azure Storage Explorer
+
+- By using ONLY the web browser, you dont have many choices in performing operations.
+  Therefore, a desktop tool has come to help with interacting with DataLake, called `Azure Storage Explorer`.
+
+  ### How to download?
+
+  - Step 1: Navigate to `Storage Accounts` tab in Portal Home.
+  - Step 2: choose the newly created storage account, then choose `Storage browser` -> `Download Azure Storage Explorer`
+
+  ![alt text](image-8.png)
+
+  - Step 3: it will now redirect to an Azure page. Click on tab **Download** and choose the corresponding OS. After that, run the `.exe` file to finish with the setup
+  - Step 4: Open the application and sign in with your Azure account. You will be able to see the folder contents after having successfully signed in.
+
+## Access Azure Data Lake Gen2 using Access Keys
+
+- In Auzre notebooks, if you want to get data from your storage -> use `access key` to access your storage
+
+  ### What is Access Key?
+
+  - Each storage comes with 2 keys (512 bit)
+  - Give full access to the storage account
+
+  ### Access Key - Spark configuration
+
+  - To access the data from Databricks, we need to **provide one of the access keys to Azure Databricks**, so that it can authenticate to the ADLs Gen2 service.
+  - By assigning the access key, to a Spark configuration called `fs.azure.account.key`.
+    ```
+    spark.conf.set(
+      "fs.azure.account.key.formula1in2025.dfs.core.windows.net",
+      "<key>"
+    )
+    ```
+    ![alt text](image-9.png)
+
+  ### Access Key - abfs driver
+
+  - A new driver, which is part of the Apache Hadoop suite of products
+  - Starts with `abfs[s]://`; the optional `s` ensures TLS (Transport Level Security). The data will be encrypted while at transit.
+  - The syntax: `abfs[s]://<container>@<storage_account_name>.dfs.core.windows.net/<folder_path/file_name>`
+    <br> E.g., `abfss://demo@formula1dl.dfs.core.windows.net/test` URI points to a folder **test** within the **demo** container.
+
+  ### Practical
+
+  - Step 1: open Databricks workspace.
+  - Step 2: create a new folder (straight under `Workspace`), not under any specific user.
+  - Step 3: get the access key: go to Portal -> navigate to the storage account -> get Keys.
+    ![alt text](image-10.png)
+  - Step 4: use Spark config to set the access key.
+    ![alt text](image-11.png)
+
+    (_Optional_) You can wrap the command in `display()` for better formatted output.
+
+## Access Azure Data Lake using SAS token
+
+- Can be used to control access at a more granular level
+- Can restrict access to specific resource types or services. For example, we can allow access to only Blob containers
+- Allow specific permissions. For example, allow Read-only access to a container
+- Restrict access to a specific time period
+- Limit access to specific IP addresses
+
+  ### Shared Access Signature using Spark config
+
+  For instance:
+
+  ```
+  spark.conf.set("fs.azure.account.auth.type.formula1in2025.dfs.core.windows.net", "SAS")
+  spark.conf.set("fs.azure.sas.token.provider.type.formula1in2025.dfs.core.windows.net", "org.apache.hadoop.fs.azurebfs.sas.FixedSASTokenProvider")
+  spark.conf.set("fs.azure.sas.fixed.token.formula1in2025.dfs.core.windows.net", "<token>")
+
+  ```
+
+  ![alt text](image-12.png)
+
+  ### Practical
+
+  ![alt text](image-13.png)
+  When generating the SAS token, it will ask to choose which `access key` will be used to sign the SAS token. IF THE ACCESS KEY IS RE-GENERATED, YOU WILL NOT BE ABLE TO USE SAS TOKEN EITHER.
+
+  After having generated the token, just simply copy paste into the missing place. The remaining procedure should be the same as working with `Access Key`.
+
+## Access Azure Data Lake using Service Principal
+
+### What is Service Principal?
+
+- Similar to user account
+- Can be registered in Azure Active Directory and assigned permissions required to access resources
+- Is recommended method to use in automated tools like **Databricks jobs**, **CI/CD pipeline**
+  ![alt text](image-14.png)
+
+### Practical
+
+![alt text](image-15.png)
+
+After this, you need to assign the role to the Data Lake:
+
+- Go to the dedicated storage account
+- Choose `Access Control (IAM)` on the tab menu -> `Add` -> `Add role assignment`
+- Search for `Storage Blob Data Contributor` -> Next
+- Assign access to `User, group or service principal` -> Select member (i.e., the storage account you created)
+- Finally, `review and assign`.
+
+## Cluster Scoped Authentication
+
+### About
+
+- What we have been doing so far is validating the authentication within the session established by the execution of the Notebook (**Session Scoped Authentication**). The authentication is only valid **WITHIN THE SESSION**. <br>
+-> Once the Notebook is detached -> re-authenticate again. <br>
+
+- Therefore, instead of authenticating from notebook, do it **WITHIN** the cluster at the startup <br>
+-> Every notebook connecting to the cluster has acccess to the storage (C**luster Scoped Authentication**). 
+- We can achieve that by: specifying **Spark config params** and corresponding **secret values** within the Cluster config <br> 
+-> As the Cluster is created, it already had the Spark config set with the right Secret value.
+- **Advantages**: effectively making the cluster **specific** for one permission group, in which all users require the same level of access.
+- **Drawbacks**: **EVERY** notebook runs *on this cluster* will have the access to the Data Lake.
+
+<br> THIS APPROACH IS NOT WIDELY USED IN THE INDUSTRY DUE TO **MANY DIFFERENT** CLUSTERS BEING CREATED FOR DIFFERENT ROLES -> waste of resources
+
+### Practical
+
+- Step 1: Go to Compute tab -> `Edit` button on the right corner
+- Step 2: expand the `Advanced options` -> scroll down to the bottom
+- Step 3: as the Spark config is in the format `key value` separated by blank space, edit it as follow:
+  ```
+  "fs.azure.account.key.formula1in2025.dfs.core.windows.net" <your key>
+  ```
+- Step 4: confirm and restart the cluster
+
+  **Note:** You can also do that with SAS token and Principal Services.
