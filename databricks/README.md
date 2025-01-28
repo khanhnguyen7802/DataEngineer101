@@ -325,14 +325,14 @@ After this, you need to assign the role to the Data Lake:
 ### About
 
 - What we have been doing so far is validating the authentication within the session established by the execution of the Notebook (**Session Scoped Authentication**). The authentication is only valid **WITHIN THE SESSION**. <br>
--> Once the Notebook is detached -> re-authenticate again. <br>
+  -> Once the Notebook is detached -> re-authenticate again. <br>
 
 - Therefore, instead of authenticating from notebook, do it **WITHIN** the cluster at the startup <br>
--> Every notebook connecting to the cluster has acccess to the storage (C**luster Scoped Authentication**). 
-- We can achieve that by: specifying **Spark config params** and corresponding **secret values** within the Cluster config <br> 
--> As the Cluster is created, it already had the Spark config set with the right Secret value.
+  -> Every notebook connecting to the cluster has acccess to the storage (C**luster Scoped Authentication**).
+- We can achieve that by: specifying **Spark config params** and corresponding **secret values** within the Cluster config <br>
+  -> As the Cluster is created, it already had the Spark config set with the right Secret value.
 - **Advantages**: effectively making the cluster **specific** for one permission group, in which all users require the same level of access.
-- **Drawbacks**: **EVERY** notebook runs *on this cluster* will have the access to the Data Lake.
+- **Drawbacks**: **EVERY** notebook runs _on this cluster_ will have the access to the Data Lake.
 
 <br> THIS APPROACH IS NOT WIDELY USED IN THE INDUSTRY DUE TO **MANY DIFFERENT** CLUSTERS BEING CREATED FOR DIFFERENT ROLES -> waste of resources
 
@@ -347,3 +347,52 @@ After this, you need to assign the role to the Data Lake:
 - Step 4: confirm and restart the cluster
 
   **Note:** You can also do that with SAS token and Principal Services.
+
+## Securing access to Azure Data Lake
+
+### Overview
+
+- `Secret Scope` (in Databricks): a collection of secrets identified by a name. There are 2 types:
+  - **Databricks backed Secret scope**: a secret scope is backed by an encrypted databricks database owned and managed by Databricks. <br>
+    We can create and alter the encrypted database using the _Databricks CLI_ or the _API_; cannot use Graphical UI.
+  - **Azure Key Vault backed Secrete scope**: the secrets are created and managed in Azure Key Vault. By keeping the secrets in Azure, they can be shared among other Azure services such as Azure Data Factory, Azure Synapse Analytics, ...
+
+![alt text](image-16.png)
+
+### Creating Azure Key Vault
+
+- Step 1: click `Create a resource` -> Search for _Key Vault_
+- Step 2: in **Access Configuration** tab, in **Permission model**, choose `Vault access policy`.
+- Step 3: Create the resource
+- Step 4: After having created -> go to the `Key Vault` -> `Objects` -> `Secrets` -> `Generate/Import`
+
+  ![alt text](image-17.png)
+
+- Step 5: Create a secret. In this example, I'm gonna set the `Access Key` as the secret.
+
+  ![alt text](image-18.png)
+
+### Creating Secret Scope
+
+- Step 1: Navigate to the homepage of Databricks (by clicking the icon). Then add **#secrets/createScope** at the end of the URL. This URL is case sensitive. For example, scope in createScope must use an uppercase S).
+  ![alt text](image-19.png)
+
+- Step 2: fill in the form
+
+  - Manage Principal: choose `All workspace user`
+  - DNS name: go to the created `Key Vault` -> `Settings` tab -> `Properties` -> `Vault URI`.
+  - Resource ID: also the `Resource ID` in the same session as above.
+
+- Step 3: click `Create`
+
+
+### Databricks Secrets Utility 
+- Purpose: to get secret values from Databricks Secret Scope and Azure Key Vault. 
+
+- Different methods in dbutils.secrets:
+  - `dbutils.secrets.list(scope="<scope_name>")`
+  - To achieve the secret value: `dbutils.secrets.get(scope="<scope_name>", key="<key_value>")` -> however, it will only be showed as **REDACTED**
+
+  #### Using Secrets utility in Cluster 
+    - Go to `Edit` in a Cluster in Databricks. 
+    - Edit several things in Spark config: `fs.azure.account.key.<storage_account>.dfs.core.windows.net {{secrets/<secret_scope_name>/<secret_name>}}`
