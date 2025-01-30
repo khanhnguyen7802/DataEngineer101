@@ -338,11 +338,11 @@ After this, you need to assign the role to the Data Lake:
 
 ### Practical
 
-- Step 1: Go to Compute tab -> `Edit` button on the right corner
+- Step 1: Go to `Compute` tab -> `Edit` button on the right corner
 - Step 2: expand the `Advanced options` -> scroll down to the bottom
 - Step 3: as the Spark config is in the format `key value` separated by blank space, edit it as follow:
   ```
-  "fs.azure.account.key.formula1in2025.dfs.core.windows.net" <your key>
+  fs.azure.account.key.formula1in2025.dfs.core.windows.net <your key>
   ```
 - Step 4: confirm and restart the cluster
 
@@ -368,7 +368,7 @@ After this, you need to assign the role to the Data Lake:
 
   ![alt text](image-17.png)
 
-- Step 5: Create a secret. In this example, I'm gonna set the `Access Key` as the secret.
+- Step 5: Create a secret. In this example, I'm gonna set my `Access Key` as the secret.
 
   ![alt text](image-18.png)
 
@@ -385,14 +385,89 @@ After this, you need to assign the role to the Data Lake:
 
 - Step 3: click `Create`
 
+### Databricks Secrets Utility
 
-### Databricks Secrets Utility 
-- Purpose: to get secret values from Databricks Secret Scope and Azure Key Vault. 
+- Purpose: to get secret values from Databricks Secret Scope and Azure Key Vault.
 
 - Different methods in dbutils.secrets:
+
+  - To view all the created Scopes, use `dbutils.secrets.listScopes()`
   - `dbutils.secrets.list(scope="<scope_name>")`
   - To achieve the secret value: `dbutils.secrets.get(scope="<scope_name>", key="<key_value>")` -> however, it will only be showed as **REDACTED**
 
-  #### Using Secrets utility in Cluster 
-    - Go to `Edit` in a Cluster in Databricks. 
-    - Edit several things in Spark config: `fs.azure.account.key.<storage_account>.dfs.core.windows.net {{secrets/<secret_scope_name>/<secret_name>}}`
+  ![alt text](image-21.png)
+
+  #### Using Secrets utility in Cluster
+
+  - Go to `Edit` in a Cluster in Databricks.
+  - Edit several things in Spark config: `fs.azure.account.key.<storage_account>.dfs.core.windows.net {{secrets/<secret_scope_name>/<secret_name>}}`
+
+## Mounting Data Lake Containers to Databricks
+
+### Databricks File System
+
+- Azure Blob Storage is created and mounted to DBFS -> we are able to run DBFS to interact with Blob Storage.
+- Can be accessed from any of the Databricks Clusters created in this workspace.
+- Is NOT a storage solution itself.
+  ![alt text](image-20.png)
+
+  ### FileShare folder
+
+  - Place we can upload files to using the Databricks UI
+  - Is available for everyone who has access to the workspace.
+  - This folder and the storage will be dropped when you delete the workspace.
+  - Used in these scenarios:
+
+    - Do quick analysis on a set of data which is very small volume and not worrying about authentication
+    - To store files being used in the current notebook, such as image, charts, etc ...
+
+    #### How to enable?
+
+    - Step 1: DBFS by default is off, so we have to turn it on.
+
+      ![alt text](image-22.png)
+
+    - Step 2: maybe refresh the page so that the DBFS can take effect. From the menu bar of Databricks, choose `Catalog` tab. On the right hand side, click on `Brows DBFS` button. The `DBFS` should appear.
+
+      ![alt text](image-23.png)
+
+    - Step 3: upload the data into the folder. After having uploaded, go back into the `Notebook` to interact with the data in the folder.
+
+      ![alt text](image-24.png)
+
+
+  ### Mounting Azure Data Lake Storage Gen 2
+  It is recommended to use `Service principal` for mounting. However, I am using Student subscription, thus cannot operate in that method due to some limited restrictions. <br>
+  -> Im gonna use `Access Key` for mounting.  
+  - Step 1: define the required params to access the Data Lake. PAY ATTENTION that the URL is `wasbs`, NOT `abfs` like usual. 
+  - Step 2: define the *mounting point* (where it will be stored after having mounted) as well as the configuration 
+  - Step 3: use `dbutils.fs.mount()` to mount with provided params. 
+
+    ```
+    container_name = "demo"
+    storage_account = "formula1in2025"
+    key = dbutils.secrets.get(scope="formula1-scope", key="formula1-access-key")
+
+    source = f"wasbs://{container_name}@{storage_account}.blob.core.windows.net/"
+    mount_folder = "/mnt/formula1in2025/demo"
+    config = {"fs.azure.account.key." + storage_account + ".blob.core.windows.net" : key}
+
+
+    mounted_list = dbutils.fs.mounts()
+    mounted_exist = False
+
+    for item in mounted_list:
+        if mount_folder in item[0]:
+            mounted_exist = True
+            break
+
+    if not mounted_exist:
+        dbutils.fs.mount(source = source, mount_point = mount_folder, extra_configs = config)
+    ```
+  ![alt text](image-25.png)
+
+  After mounting, you can use the **file system semantics** (*instead of the long URL*) to access storage.
+
+  ![alt text](image-26.png)
+
+  **Note:** In order to `unmount`, use `dbutils.fs.unmount("/mnt/formula1in2025/demo")`
