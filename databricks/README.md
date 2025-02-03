@@ -435,13 +435,14 @@ After this, you need to assign the role to the Data Lake:
 
       ![alt text](image-24.png)
 
-
   ### Mounting Azure Data Lake Storage Gen 2
+
   It is recommended to use `Service principal` for mounting. However, I am using Student subscription, thus cannot operate in that method due to some limited restrictions. <br>
-  -> Im gonna use `Access Key` for mounting.  
-  - Step 1: define the required params to access the Data Lake. PAY ATTENTION that the URL is `wasbs`, NOT `abfs` like usual. 
-  - Step 2: define the *mounting point* (where it will be stored after having mounted) as well as the configuration 
-  - Step 3: use `dbutils.fs.mount()` to mount with provided params. 
+  -> Im gonna use `Access Key` for mounting.
+
+  - Step 1: define the required params to access the Data Lake. PAY ATTENTION that the URL is `wasbs`, NOT `abfs` like usual.
+  - Step 2: define the _mounting point_ (where it will be stored after having mounted) as well as the configuration
+  - Step 3: use `dbutils.fs.mount()` to mount with provided params.
 
     ```
     container_name = "demo"
@@ -464,10 +465,38 @@ After this, you need to assign the role to the Data Lake:
     if not mounted_exist:
         dbutils.fs.mount(source = source, mount_point = mount_folder, extra_configs = config)
     ```
-  ![alt text](image-25.png)
 
-  After mounting, you can use the **file system semantics** (*instead of the long URL*) to access storage.
+    ![alt text](image-25.png)
+
+  After mounting, you can use the **file system semantics** (_instead of the long URL_) to access storage.
 
   ![alt text](image-26.png)
 
   **Note:** In order to `unmount`, use `dbutils.fs.unmount("/mnt/formula1in2025/demo")`
+
+# Solution Architecture
+
+- `Azure Architecture Center`: provides guidance for designing and building solutions on Azure using established patterns and practices
+- You can refer to [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/) for different architectures depending on your needs. <br> Also, specifically Databricks, you can go to their [blogs](https://www.databricks.com/blog) to update the latest solution.
+- **For example**: the [solution](https://learn.microsoft.com/en-us/azure/architecture/solution-ideas/articles/azure-databricks-modern-analytics-architecture) below describes a solution idea where your cloud architect can use this guidance to help visualize the major components. <br>
+  This solution gets real time events via Event Hub and regular batch data from Azure Data Factory -> processed by Spark on Databricks -> go through the layers bronze, silver, gold -> made available for all workloads (ML, BI) via PowerBI | export to Microsoft Fabric
+  ![alt text](image-27.png)
+
+In the project, we mainly focus on the Databricks part, which can be partially seen as this [solution](https://learn.microsoft.com/en-us/azure/architecture/solution-ideas/articles/ingest-etl-stream-with-adb). Bronze stores the raw data (_namely raw layer_) | Silver stores the filtered, cleansed and augmented data (_namely processed/ingested data_) | Gold stores highly aggregated data with key business level information (_namely presentation layer_). <br>
+From left to right, the **quality of data** improves and the **business value** of the data also increases.  
+![alt text](image-28.png)
+
+# Spark SQL
+
+## Hive Meta Store
+- Data is stored in Data Lake in various types, such as csv, parquet, json ... In order for Spark to treat the data as tables and columns <br>
+-> Need to register this data in a meta store. 
+- Meta store is a storage for storing the metadata about the data files. For example, location of the file, the format of the data, column names, ...
+- Spark uses `Hive Meta Store` (which is provided by the Apache Hive project). When choosing the storage for `Hive Meta Store`, there are 2 choices:
+  - `Default managed Meta Store`
+  - `External Meta Store (Azure SQL, MySQL, ...)`
+- In Spark, there are 2 types of `Table`:
+  - `Managed`: Spark maintains both `the metadata` in Hive Meta Store and also `the data files` associated with the table (which are stored in ADLs). When you drop the managed table, you also drop the data as well. 
+  <br> The data is created in Databricks default location (*dbfs:/user/hive/warehouse/*)
+  - `External`: Spark only manages `the metadata` and **we** manage `the data files`. When you want to remove the data (e.g., delete the table), you will have to run commands to remove the data from the file systems separately. Dropping the table itself WON'T have effect. 
+  <br> We must specify an **external location** (*LOCATION 's3://...' or abfss://...'*).
