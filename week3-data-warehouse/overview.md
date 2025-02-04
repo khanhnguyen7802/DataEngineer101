@@ -2,16 +2,16 @@
 
 ## Comparison
 
-|                    |            OLTP (Online Transaction Processing)            |                 OLAP (Online Analytical Processing)                 |
-| :----------------- | :--------------------------------------------------------: | :-----------------------------------------------------------------: |
-| Purpose            | Control and run essential business operations in real time |  Plan, solve problems, support decisions, discover hidden insights  |
-| Data updates       |           Short, fast updates initiated by users           | Data periodically refreshed with scheduled, long-running batch jobs |
-| Database design    |      **Normalized** database for efficiency analysis       |               **Denormalized** database for analytics               |
-| Space requirements |       Generally small if historical data is archived       |          Generally large due to aggregating large datasets          |
-| Data view          |           Lists day-to-day business transactions           |              Multi-dimensional view of enterprise data              |
-| User examples      |     Customer-facing personnel, clerks, online shoppers     |          Knowledge workers such as DA, BA, and executives           |
+|                    |                OLTP (Online Transaction Processing)                |                                 OLAP (Online Analytical Processing)                                  |
+| :----------------- | :----------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+| Purpose            |     Control and run essential business operations in real time     |                  Plan, solve problems, support decisions, discover hidden insights                   |
+| Data updates       |               Short, fast updates initiated by users               |                 Data periodically refreshed with scheduled, long-running batch jobs                  |
+| Database design    |          **Normalized** database for efficiency analysis           |                               **Denormalized** database for analytics                                |
+| Space requirements |           Generally small if historical data is archived           |                          Generally large due to aggregating large datasets                           |
+| Data view          |               Lists day-to-day business transactions               |                              Multi-dimensional view of enterprise data                               |
+| User examples      | daily bank transactions, e-commerce platforms, reservation systems | Knowledge workers such as DA, BA, and executives; BI and reporting; supply chain management analysis |
 
-|
+<br>
 
 # What is Data Warehouse?
 
@@ -91,4 +91,3 @@
 
 - `Partitioning`: reduces the **scope of data scanned** by breaking the table into chunks (e.g., by _date_ or _range_).
 - `Clustering`: reduces the **amount of work within each chunk** by pre-sorting and organizing rows.
-
