@@ -1,9 +1,12 @@
 import os
+import copy
 from datetime import timedelta, datetime
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
+from airflow.operators.dummy import DummyOperator
+from airflow.utils.task_group import TaskGroup
 
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator, BigQueryCreateEmptyDatasetOperator
@@ -66,7 +69,6 @@ with DAG(
     max_active_runs=1
 ) as dag:
 
-
     download_and_unzip_dataset_task = BashOperator(
         task_id="download_dataset_task",
         bash_command="/opt/airflow/dags/download_unzip.sh $airflow_path",
@@ -85,34 +87,47 @@ with DAG(
         },
     )
 
-    # create_empty_dataset_task = BigQueryCreateEmptyDatasetOperator( # to create a (placeholder) dataset 
-    #     task_id="create_bigquery_dataset",
-    #     dataset_id= BIGQUERY_DATASET,
-    #     project_id= PROJECT_ID,
-    #     location="EU",  # Specify the dataset location
-    # )
+    create_empty_dataset_task = BigQueryCreateEmptyDatasetOperator( # to create a (placeholder) dataset 
+        task_id="create_bigquery_dataset",
+        dataset_id= BIGQUERY_DATASET,
+        project_id= PROJECT_ID,
+        location="EU",  # Specify the dataset location
+    )
 
-    # # Load data from GCS to BigQuery
-    # bigquery_external_table_task = BigQueryCreateExternalTableOperator(
-    #     task_id="bigquery_external_tables_task",
-    #     table_resource={
-    #         "tableReference": {
-    #             "projectId": PROJECT_ID, # The ID of the project containing this table.
-    #             "datasetId": BIGQUERY_DATASET,
-    #             "tableId": "external_table", # name of the table
-    #         },
 
-    #         "externalDataConfiguration": {
-    #             "sourceFormat": "PARQUET",
-    #             "sourceUris": [f"gs://{BUCKET_NAME}/{GCS_PATH}"],
-    #         },
-    #     },
-    # )
+    with TaskGroup("generate_tables_task") as generate_tables_task:
+        
+        filenames = [f for f in os.listdir(f"{LOCAL_PATH}/dataset") if f.endswith(".csv")]
+
+        for filename in filenames:
+            csv_filename = copy.deepcopy(filename)
+            only_name = filename.replace(".csv", "")
+            generate_table_task = BigQueryCreateExternalTableOperator(
+                task_id=f"bigquery_{only_name}_table_task",
+                table_resource={
+                    "tableReference": {
+                        "projectId": PROJECT_ID, # The ID of the project containing this table.
+                        "datasetId": BIGQUERY_DATASET,
+                        "tableId": f"{only_name}", # name of the table
+                    },
+
+                    "externalDataConfiguration": {
+                        "sourceFormat": "CSV",
+                        "sourceUris": [f"gs://{BUCKET_NAME}/{GCS_PATH}/{csv_filename}"],
+                        "autodetect": True,
+                    },
+                }
+                 
+            )
+            
+
+
+
 
     # Task dependencies
     (
         download_and_unzip_dataset_task 
         >> local_to_gcs_task 
-        # >> create_empty_dataset_task
-        # >> bigquery_external_table_task
+        >> create_empty_dataset_task
+        >> generate_tables_task
     )
