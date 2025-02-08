@@ -46,7 +46,7 @@
 - Is the automated configuration, coordination and management of multiple computer systems, applications and/or services stringing together multiple tasks to execute a larger workflow/process.
 - Automates many tasks, to work as a process
 
-![alt text](image.png)
+![alt text](./images/image.png)
 
 <br>
 <hr>
@@ -129,7 +129,7 @@
 When you create an instance of an operator in a DAG and provide it with its required parameters, it becomes a `task`.
 
 - `Task`: is an instance of an operator. Each task in a DAG is defined by instantiating an operator.
-  ![alt text](image-1.png)
+  ![alt text]./images/(image-1.png)
 
 # Airflow Infrastructure Components
 
@@ -143,13 +143,13 @@ When you create an instance of an operator in a DAG and provide it with its requ
 => The first four components below run at all times,
 and the last two are situational components that are used only to run tasks or make use of certain features.
 
-![alt text](image-3.png)
+![alt text]./images/(image-3.png)
 
 # Task life cycle
 
 ## A happy workflow execution process
 
-![alt text](image-2.png)
+![alt text]./images/(image-2.png)
 
 # Our first DAG
 
@@ -176,24 +176,29 @@ docker compose up airflow-init -d
   ${\textbf {\textsf{\color{red}ONLY WHEN task1 has succeeded}}}$
 
 # Ingest data to GCP with Airflow
-In this section, im gonna show how we can **download a dataset**, **ingest the dataset into Bucket on Google Cloud Platform**, and then **put that dataset to BigQuery for querying (and other operations)**. 
+
+In this section, im gonna show how we can **download a dataset**, **ingest the dataset into Bucket on Google Cloud Platform**, and then **put that dataset to BigQuery for querying (and other operations)**.
 
 ## Prerequisites
-- Airflow 
-- Docker 
-- Google Cloud account 
+
+- Airflow
+- Docker
+- Google Cloud account
 
 ## Complete guide
-### Setting up Cloud environment  
-- Step 1: Access Google Cloud account (create one if you don't have yet) 
-- Step 2: Create a new project. As you have created a new project, you will also have the `project ID` (which will be used later on). 
-![alt text](image-4.png)
+
+### Setting up Cloud environment
+
+- Step 1: Access Google Cloud account (create one if you don't have yet)
+- Step 2: Create a new project. As you have created a new project, you will also have the `project ID` (which will be used later on).
+  ![alt text]./images/(image-4.png)
 - Step 3: Navigate to `IAM and admin` -> `Service accounts` -> create a Service Account with role **BigQuery Admin** and **Storage Admin** (since we will be working with Buckets and BigQuery). Additionally, if you want to edit the roles (add, remove, update), go to `IAM and admin` -> `IAM` -> adjust roles.
-- Step 4: Add key -> `Create a new key` -> choose the `JSON` option -> Download that file (*that is your credentials*).
-- Step 5: in your workspace, put the *Google Credentials* in such structure: `.google\credentials\google_credentials.json`.
+- Step 4: Add key -> `Create a new key` -> choose the `JSON` option -> Download that file (_that is your credentials_).
+- Step 5: in your workspace, put the _Google Credentials_ in such structure: `.google\credentials\google_credentials.json`.
 - Step 6: In Google Cloud, create a Bucket: go to Navigation Menu -> `Cloud Storage` -> `Buckets` -> create a new Bucket. Since the name is **globally unique**, I suggest naming as follow: `<project_id> + <the service using>`. For example, my bucket will be `de-zoomcamp-2025-448114-gcp-bucket`.
 
-### Setting up the local environment 
+### Setting up the local environment
+
 Before we dive deep into the actual work, it is always a tedious stuff to set up the initial environment. \
 At this step, I am assuming you already known how to use Airflow and run DAGs (if not, refer to [Our first DAG](#our-first-dag)). \
 Usually, we can create `.env` file to store our variables in the environment. However, in this case, im gonna define the environment variables straight in `docker-compose.yaml` file.
@@ -201,32 +206,41 @@ Usually, we can create `.env` file to store our variables in the environment. Ho
 - Step 1: check [docker-compose.yaml for Airflow](./airflow_docker/docker-compose.yaml).
 - Step 2: define additional variables in the environment
   - `GOOGLE_APPLICATION_CREDENTIALS`: the path that leads to `google_credentials.json`
-  - `AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT` (*optional*)
-  - `GCP_PROJECT_ID`: the project ID 
+  - `AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT` (_optional_)
+  - `GCP_PROJECT_ID`: the project ID
   - `GCP_GCS_BUCKET`: the name of the bucket
 
-![alt text](image-5.png)
- 
+![alt text]./images/(image-5.png)
+
 - Step 3: map corresponding volumes.  
-![alt text](image-6.png)
+  ![alt text]./images/(image-6.png)
 
   **Explanation:** `Airflow` is run by using Docker, which means that the **local folders** will have to map to the folders on VM. \
-  By default, the official Airflow Docker image sets the home directory to `/opt/airflow`. You can also validate the path by executing 
+   By default, the official Airflow Docker image sets the home directory to `/opt/airflow`. You can also validate the path by executing
+
   ```
-  docker inspect -f '{{ .Mounts }}' <container_id>
-  ``` 
-  
-  **How does this volume mapping work?** 
-  
-  --> General syntax: 
+  docker inspect -f '{{ .Mounts }}' <worker_container_id>
+  ```
+
+  To work with folders in Airflow in the terminal, you can execute `bash` environment of the airflow worker:
+
+  ```
+  docker exec -it <worker_container_id> bash
+  ```
+
+  **How does this volume mapping work?**
+
+  --> General syntax:
+
   ```
   volumes:
     - [host_path]:[container_path]:[options]
   ```
+
     - `host_path`: The path to the file or directory on the host machine (your local laptop).
     - `container_path`: The corresponding path inside the Docker container where the volume will be mounted.
     - `options`: (Optional) Access permissions, such as ro (read-only).
-    
+
       <br>
 
       ${\textbf {\textsf{\color{red}E.g.,}}}$  `~/.google/credentials/:/.google/credentials:ro`
@@ -236,37 +250,50 @@ Usually, we can create `.env` file to store our variables in the environment. Ho
     - `/.google/credentials` (*Container Path*): The directory **inside the container** where the credentials will be accessible.
     - `ro` (*Option*): Specifies that the volume is read-only, preventing the container from modifying the credentials.
 
+### Writing DAG
 
-### Writing DAG 
-Now, we will be writing `DAG` file to execute tasks using Airflow. 
-  - Step 1: import all required libraries and other default args as usual (like normal DAGs)
-  - Step 2: define environment variables in the file (e.g., `PROJECT_ID = os.environ.get("GCP_PROJECT_ID")`)
-  - Step 3: define the tasks: download dataset | ingest the dataset into *Google Cloud Storage* (or **Buckets**) | from GSC load to BigQuery
+Now, we will be writing `DAG` file to execute tasks using Airflow.
 
-    ![alt text](image-8.png)
-    <br><br> 
+- Step 1: import all required libraries and other default args as usual (like normal DAGs)
+- Step 2: define environment variables in the file (e.g., `PROJECT_ID = os.environ.get("GCP_PROJECT_ID")`)
+- Step 3: define the tasks: download dataset | ingest the dataset into _Google Cloud Storage_ (or **Buckets**) | from GSC load to BigQuery
 
-    1. **Download the dataset**: we are using `Bash` to execute the downloading command automatically. Initially, we need to specify the URL of the dataset, after which `curl` is used for download and `>` to direct the downloaded file to another place. Since we are running on `Docker`, the *local* pathby default is `/opt/airflow`. View log in each task to see whether there is any error raised.
-    
-    ![alt text](image-7.png)  
+  ![alt text]./images/(image-8.png)
+  <br><br>
 
-    ![alt text](image-9.png)
-    <br>
+  1. **Download the dataset**: we are using `Bash` to execute the downloading command automatically. Initially, we need to specify the URL of the dataset, after which `curl` is used for download and `>` to direct the downloaded file to another place. Since we are running on `Docker`, the _local_ pathby default is `/opt/airflow`. View log in each task to see whether there is any error raised.
 
-    2. **Ingest data into Buckets**: this simply uploads the local file to a target location. \
-    Refer to [dag_gcp-conect.py](./airflow_docker/dags/dag_gcp-connect.py) for more details. 
+  ![alt text]./images/(image-7.png)
 
-    ![alt text](image-10.png)
+  ![alt text]./images/(image-9.png)
+  <br>
 
-    <br>
-    
-    3.  **From Buckets to BigQuery**: As we already had the `parquet` file in Buckets, we will turn this into a `schema` in `BigQuery`. Therefore, before moving the dataset into `BigQuery`, we have to create an **empty dataset** (serves as a placeholder) first, and then can actually load to `BigQuery`. 
-    <br>
-    We can create the empty dataset straight on UI of Google Cloud Platform, however, I will make everything automatic. 
+  2. **Ingest data into Buckets**: this simply uploads the local file to a target location. \
+     Refer to [dag_gcp-conect.py](./airflow_docker/dags/dag_gcp-connect.py) for more details.
 
-    ![alt text](image-11.png)
-    ---
-    ![alt text](image-12.png)
+  ![alt text](./images/image-10.png)
 
-  - Step 4: VOILA !!! YOU HAVE DONE !!!
+  <br>
+
+  3.  **From Buckets to BigQuery**: As we already had the `parquet` file in Buckets, we will turn this into a `schema` in `BigQuery`. Therefore, before moving the dataset into `BigQuery`, we have to create an **empty dataset** (serves as a placeholder) first, and then can actually load to `BigQuery`.
+      <br>
+      We can create the empty dataset straight on UI of Google Cloud Platform, however, I will make everything automatic.
+
+  ## ![alt text](./images/image-11.png)
+
+  ![alt text](./images/image-12.png)
+
+- Step 4: VOILA !!! YOU HAVE DONE !!!
   <br> Now you can go to `BigQuery studio` on GCP to see your new data schema and from here, you can do whatever queries you want to.
+
+
+# Homework week 2
+For the homework this week, we will be working with `Airflow` to ingest the data into `GCS` and then perform the corresponding queries. 
+- Dataset used: `Green taxi` dataset from `2021-01-01` to `2021-07-31`
+- URL: https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/green/download
+
+## Set up
+  
+
+## Questions 
+### Question 1
