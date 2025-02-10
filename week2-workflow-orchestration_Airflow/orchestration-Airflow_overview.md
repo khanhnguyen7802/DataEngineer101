@@ -6,11 +6,11 @@
   to other team members.
 - Generally associate some sort of metadata for faster access
 
-|              |                        Data Lake                        |                                        Data Warehouse                                        |
-| :----------- | :-----------------------------------------------------: | :------------------------------------------------------------------------------------------: |
-| Data         |                 Unstructured, huge size                 | Structured, might have been summarized from on-prem db (OLAP) for faster summary; small size |
-| Target users |            Data Scientists or Data Analysts             |                                      Business Analysts                                       |
-| Use cases    | Stream processing, Machine learning, Real time analysis |                                Batch processing, BI reporting                                |
+|              |                                                      Data Lake                                                       |                                                                               Data Warehouse                                                                                |
+| :----------- | :------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| Data         | Unstructured, huge size \| stored in a distributed file system (a data lake); **meta data** is used to define tables | Structured, might have been summarized from on-prem db (OLAP) for faster summary; small size \| stored in relational db; tables are **denormalized** for query optimization |
+| Target users |                                           Data Scientists or Data Analysts                                           |                                                                              Business Analysts                                                                              |
+| Use cases    |                               Stream processing, Machine learning, Real time analysis                                |                                                                       Batch processing, BI reporting                                                                        |
 |              |
 
 ## Transactional Data Lake
@@ -237,18 +237,18 @@ Usually, we can create `.env` file to store our variables in the environment. Ho
     - [host_path]:[container_path]:[options]
   ```
 
-    - `host_path`: The path to the file or directory on the host machine (your local laptop).
-    - `container_path`: The corresponding path inside the Docker container where the volume will be mounted.
-    - `options`: (Optional) Access permissions, such as ro (read-only).
+  - `host_path`: The path to the file or directory on the host machine (your local laptop).
+  - `container_path`: The corresponding path inside the Docker container where the volume will be mounted.
+  - `options`: (Optional) Access permissions, such as ro (read-only).
 
-      <br>
+    <br>
 
-      ${\textbf {\textsf{\color{red}E.g.,}}}$  `~/.google/credentials/:/.google/credentials:ro`
+    ${\textbf {\textsf{\color{red}E.g.,}}}$ `~/.google/credentials/:/.google/credentials:ro`
 
-    - `~/.google/credentials/` (*Host Path*): The directory **on your host machine** where Google Cloud credentials are stored (e.g., your service account JSON files).
-        ~ expands to the home directory of the current user.
-    - `/.google/credentials` (*Container Path*): The directory **inside the container** where the credentials will be accessible.
-    - `ro` (*Option*): Specifies that the volume is read-only, preventing the container from modifying the credentials.
+  - `~/.google/credentials/` (_Host Path_): The directory **on your host machine** where Google Cloud credentials are stored (e.g., your service account JSON files).
+    ~ expands to the home directory of the current user.
+  - `/.google/credentials` (_Container Path_): The directory **inside the container** where the credentials will be accessible.
+  - `ro` (_Option_): Specifies that the volume is read-only, preventing the container from modifying the credentials.
 
 ### Writing DAG
 
@@ -286,14 +286,15 @@ Now, we will be writing `DAG` file to execute tasks using Airflow.
 - Step 4: VOILA !!! YOU HAVE DONE !!!
   <br> Now you can go to `BigQuery studio` on GCP to see your new data schema and from here, you can do whatever queries you want to.
 
-
 # Homework week 2
-For the homework this week, we will be working with `Airflow` to ingest the data into `GCS` and then perform the corresponding queries. 
+
+For the homework this week, we will be working with `Airflow` to ingest the data into `GCS` and then perform the corresponding queries.
+
 - Dataset used: `Green taxi` dataset from `2021-01-01` to `2021-07-31`
 - URL: https://github.com/DataTalksClub/nyc-tlc-data/releases/tag/green/download
 
 ## Set up
-  
 
-## Questions 
+## Questions
+
 ### Question 1
