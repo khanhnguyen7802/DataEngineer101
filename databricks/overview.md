@@ -506,3 +506,62 @@ From left to right, the **quality of data** improves and the **business value** 
 
 - Full Load: not suitable for large amount of data.
 - Incremental Load: suitable in scenario that we only receive the CHANGED data since the last load. E.g., regarding the project, day 1, you get the data of day 1; when it comes to day 2, you only load the data of day 2. Applies on day 3, day 4, ... day n.
+
+<br>
+
+# Delta Lake (Lakehouse)
+
+## About
+
+- Open source storage layer that brings reliability to Data Lakes
+- Provides ACID transactions
+
+## History
+
+### Data Warehouses
+
+- Data Warehouse came into existence in 1980s when business wants to gather all in one place rather than looking in each individual department. Some large data warehouses also gather **external** data to make intelligent decisions.
+  - Data received mainly in SQL tables, CSV files or semi-structured (JSON, XML).
+  - Then, go through the ETL process to go into Data Warehouses/Marts. Then, consumed for analytics.
+- However, in early 2000s, due to the popularity of the Internet, a significant increase in volumes of data + a change in variety of data (unstructed data such as vids, imgs, ...), but data warehouses are not able to handle these data. <br>
+  Moreover, the data was only loaded after being extracted and transformed -> took longer to develop a solution to get new data into data warehouse. And it's expensive to store data and yet provides support for Data Science or ML/AI workloads.
+
+### Data Lake
+
+- Data Lake came into existence around 2011.
+- Not only handle structured and semi-structured data, but can also handle unstructred data
+  - Data received is ingested into Data Lake without any kind of cleansing or transformation -> result in quicker timescales to develop solutions as well as fast ingestion time.
+  - Cost of storage is cheap -> ingest freely without much worrying
+  - Can use the raw data as well as the transformed data
+- However, there is a problem: Data Lakes are too slow to service interactive BI reports, and lack of data governance. Also no support for ACID transactions and unable to handle corrections to data (i.e., rewrite the entire partition). No roll back any data being written (no history or versioning).
+
+### Data Lakehouse
+
+- Basically Data Lake with `ACID` transaction controls, came to existence since 2018 and rapidly evolving, introducing versioning, BUT still can't be compared to data warehouses regarding BI reporting.
+- `Databricks Architecture` has 2 stages:
+
+  - First stage transforming the raw data to provide structure, perform data cleansing and quality, etc... and return to a set of tables (which are called **silver tables**). The raw tables are called the **bronze tables**.
+  - The data from the **silver tables** are aggregated to provide business meanings (i.e., **gold tables**).
+
+- When storing the data in **parquet** file, Delta Lake also creates a transaction log alongside that file -> provides history, versioning, ACID transaction support, time travel ...
+
+![alt text](image.png)
+
+# Azure Data Factory
+
+## About
+
+- a fully managed, serverless data integration solution
+- ingest, prepare and transform data at scale
+
+## Problem solved
+- Business wants the data to be ingested and processed quickly in a consistent manner, so that they can gain insights from the data and realize benefits.
+- Traditional data integration tools struggle to handle this due to the lack of connectors and the ability to elastically scale
+-> Data Factory provides the ability to ingest data from all of the sources 
+- Also provides the ability to transform and analyze the data 
+
+## NOT capable of 
+- Not a migration tool
+- Not designed for streaming workloads
+- Not suitable for complex data transformation (should use Databricks instead)
+- Not a data storage solution
