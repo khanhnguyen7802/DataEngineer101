@@ -24,10 +24,10 @@ services:
     networks:
       - pg-network
 
-networks: # we need to define a pre-existing network; otherwise docker will create a new default one 
+networks: # we need to define a pre-existing network; otherwise docker will create a new default one
   pg-network:
-    external: 
-      name: pg-network
+    name: pg-network
+    external: true
 
 volumes:
   pgadmin_conn_data:
