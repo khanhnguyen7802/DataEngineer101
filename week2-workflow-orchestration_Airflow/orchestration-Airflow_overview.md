@@ -129,7 +129,7 @@
 When you create an instance of an operator in a DAG and provide it with its required parameters, it becomes a `task`.
 
 - `Task`: is an instance of an operator. Each task in a DAG is defined by instantiating an operator.
-  ![alt text]./images/(image-1.png)
+  ![alt text](./images/image-1.png)
 
 # Airflow Infrastructure Components
 
@@ -143,13 +143,13 @@ When you create an instance of an operator in a DAG and provide it with its requ
 => The first four components below run at all times,
 and the last two are situational components that are used only to run tasks or make use of certain features.
 
-![alt text]./images/(image-3.png)
+![alt text](./images/image-3.png)
 
 # Task life cycle
 
 ## A happy workflow execution process
 
-![alt text]./images/(image-2.png)
+![alt text](./images/image-2.png)
 
 # Our first DAG
 
@@ -191,7 +191,7 @@ In this section, im gonna show how we can **download a dataset**, **ingest the d
 
 - Step 1: Access Google Cloud account (create one if you don't have yet)
 - Step 2: Create a new project. As you have created a new project, you will also have the `project ID` (which will be used later on).
-  ![alt text]./images/(image-4.png)
+  ![alt text](./images/image-4.png)
 - Step 3: Navigate to `IAM and admin` -> `Service accounts` -> create a Service Account with role **BigQuery Admin** and **Storage Admin** (since we will be working with Buckets and BigQuery). Additionally, if you want to edit the roles (add, remove, update), go to `IAM and admin` -> `IAM` -> adjust roles.
 - Step 4: Add key -> `Create a new key` -> choose the `JSON` option -> Download that file (_that is your credentials_).
 - Step 5: in your workspace, put the _Google Credentials_ in such structure: `.google\credentials\google_credentials.json`.
@@ -210,10 +210,10 @@ Usually, we can create `.env` file to store our variables in the environment. Ho
   - `GCP_PROJECT_ID`: the project ID
   - `GCP_GCS_BUCKET`: the name of the bucket
 
-![alt text]./images/(image-5.png)
+![alt text](./images/image-5.png)
 
 - Step 3: map corresponding volumes.  
-  ![alt text]./images/(image-6.png)
+  ![alt text](./images/image-6.png)
 
   **Explanation:** `Airflow` is run by using Docker, which means that the **local folders** will have to map to the folders on VM. \
    By default, the official Airflow Docker image sets the home directory to `/opt/airflow`. You can also validate the path by executing
@@ -258,14 +258,14 @@ Now, we will be writing `DAG` file to execute tasks using Airflow.
 - Step 2: define environment variables in the file (e.g., `PROJECT_ID = os.environ.get("GCP_PROJECT_ID")`)
 - Step 3: define the tasks: download dataset | ingest the dataset into _Google Cloud Storage_ (or **Buckets**) | from GSC load to BigQuery
 
-  ![alt text]./images/(image-8.png)
+  ![alt text](./images/image-8.png)
   <br><br>
 
   1. **Download the dataset**: we are using `Bash` to execute the downloading command automatically. Initially, we need to specify the URL of the dataset, after which `curl` is used for download and `>` to direct the downloaded file to another place. Since we are running on `Docker`, the _local_ pathby default is `/opt/airflow`. View log in each task to see whether there is any error raised.
 
-  ![alt text]./images/(image-7.png)
+  ![alt text](./images/image-7.png)
 
-  ![alt text]./images/(image-9.png)
+  ![alt text](./images/image-9.png)
   <br>
 
   2. **Ingest data into Buckets**: this simply uploads the local file to a target location. \
