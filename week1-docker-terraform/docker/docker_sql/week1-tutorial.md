@@ -88,10 +88,9 @@ Now, access pgAdmin via [localhost:8080](http://localhost:8080).
 ### 3. Connect the database to pgAdmin
 
 - We are now facing the problem when trying to make connection, because we are running the pgAdmin inside a container, and localhost inside the container is trying to find postgresql. \
-  Of course it cannot find because postgres is running in a different container. So, how do we actually connect it? 
-  
-  -> Connect those 2 containers using a network. 
+  Of course it cannot find because postgres is running in a different container. So, how do we actually connect it?
 
+  -> Connect those 2 containers using a network.
 
 First, open the terminal and create the network:
 
@@ -136,24 +135,27 @@ Now, we can put everything into a container, such that we only need to run the c
 - Create Dockerfile that contains all needed commands to start the pipeline. This Dockerfile basically builds up an Image (for building the container later on).
 
   - `FROM <image>`: define a base for the Image. All instructions that follow are executed in this base image (e.g., in the Python environment).
-  - `RUN <command>`: Execute any commands in a new layer on top of the current image and commit the result.  
+  - `RUN <command>`: Execute any commands in a new layer on top of the current image and commit the result.
   - `WORKDIR <directory>`: Set the working directory for any `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, and `ADD` instructions that follow it in the Dockerfile.
   - `COPY <src> <dst>`: Copy new files or directories from `<src>` (i.e., from the local build context) and add them to the filesystem of the container at the path `<dest>`.
   - `ENTRYPOINT>`: specify default executables; works similar to `CMD`, but it does not allow to override the command.
+
     - Shell form: `ENTRYPOINT command param1 param2`
     - Exec form: `ENTRYPOINT ["executable", "param1", "param2"]`
-    <br>
+      <br>
 
-    **Example 1:** `ENTRYPOINT ["python", "app.py"]`: when this container starts, it launches a Python interpreter and executes the `app.py` script to act as your container’s default behavior. 
+    **Example 1:** `ENTRYPOINT ["python", "app.py"]`: when this container starts, it launches a Python interpreter and executes the `app.py` script to act as your container’s default behavior.
     <br>
-    **Example 2 (combine with CMD):** By combining with `CMD`, we are able to override the parameters passed. 
+    **Example 2 (combine with CMD):** By combining with `CMD`, we are able to override the parameters passed.
+
     ```
     ENTRYPOINT ["python", "app.py"]
     CMD ["--help"]
-    ```  
-    In this example, no command line args = executing `python app.py --help` by default. However, if you provide arguments (e.g., `docker run <image> --version`), then it will result in `python app.py --version`.   
-  - `CMD <command>`: Let you define what command the container should execute when launched. Each Dockerfile only has one CMD, and only the **last** CMD instance is respected when multiple exist.
+    ```
 
+    In this example, no command line args = executing `python app.py --help` by default. However, if you provide arguments (e.g., `docker run <image> --version`), then it will result in `python app.py --version`.
+
+  - `CMD <command>`: Let you define what command the container should execute when launched. Each Dockerfile only has one CMD, and only the **last** CMD instance is respected when multiple exist.
 
 - Build the Image (it will base on the `Dockerfile` to build the image layers):
 
@@ -168,14 +170,20 @@ Now, we can put everything into a container, such that we only need to run the c
   ```
 
 ## Docker Compose
+
 Instead of running 2 separate terminals for `Postgres` and `pgadmin`, we can define those in a same `compose.yaml` file, so that when `compose.yaml` is executed, the 2 services will also start. \
 Refer to `compose.yaml` file for more information. \
-Go to the working directory, open terminal and run: 
+The `.yaml` file basically contains the (configuration) of **images** of the **services** that you want to start.
+
+Simply go to the directory that contains `.yaml file`, open terminal and run:
+
 ```
-docker compose up
+docker compose up -d
 ```
-- `-d` flag for detached -> terminal will not be hung up due to execution and you can freely type in terminal. 
-- To close the `compose`, run: 
+
+- `-d` flag for detached -> terminal will not be hung up due to execution and you can freely type in terminal.
+- To close the `compose`, run:
+
 ```
-docker compose down 
+docker compose down
 ```
