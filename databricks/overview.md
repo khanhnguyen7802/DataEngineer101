@@ -102,6 +102,8 @@
 
 ## Azure Databricks Pricing
 
+![alt text](./images/image-30.png)
+
 - Depends on a number of factors:
 
   - Type of workload (All purpose, Jobs compute, Databricks SQL, Photon Engine...)
@@ -227,7 +229,7 @@
   - Step 1: Navigate to `Storage Accounts` tab in Portal Home.
   - Step 2: choose the newly created storage account, then choose `Storage browser` -> `Download Azure Storage Explorer`
 
-  ![alt text]./images/(image-8.png)
+  ![alt text](./images/image-8.png)
 
   - Step 3: it will now redirect to an Azure page. Click on tab **Download** and choose the corresponding OS. After that, run the `.exe` file to finish with the setup
   - Step 4: Open the application and sign in with your Azure account. You will be able to see the folder contents after having successfully signed in.
@@ -251,7 +253,7 @@
       "<key>"
     )
     ```
-    ![alt text]./images/(image-9.png)
+    ![alt text](./images/image-9.png)
 
   ### Access Key - abfs driver
 
@@ -545,7 +547,7 @@ From left to right, the **quality of data** improves and the **business value** 
 
 - When storing the data in **parquet** file, Delta Lake also creates a transaction log alongside that file -> provides history, versioning, ACID transaction support, time travel ...
 
-![alt text](image.png)
+![alt text](./images/image-29.png)
 
 # Azure Data Factory
 
@@ -555,13 +557,92 @@ From left to right, the **quality of data** improves and the **business value** 
 - ingest, prepare and transform data at scale
 
 ## Problem solved
-- Business wants the data to be ingested and processed quickly in a consistent manner, so that they can gain insights from the data and realize benefits.
-- Traditional data integration tools struggle to handle this due to the lack of connectors and the ability to elastically scale
--> Data Factory provides the ability to ingest data from all of the sources 
-- Also provides the ability to transform and analyze the data 
 
-## NOT capable of 
+- Business wants the data to be **ingested** and **processed** quickly in a consistent manner, so that they can gain insights from the data and realize benefits.
+- Traditional data integration tools struggle to handle this due to the **lack of connectors** and the ability to elastically scale
+  -> Data Factory provides the ability to ingest data from all of the sources
+- Say, you perform data transformation in external solution (e.g., Databricks), then you can orchestrate those transformation from Data Factory. Also applies with analytics from other sources (e.g., HDInsight, ML models...)
+- Capable of publishing the dashboard (e.g., PowerBI) to the data consumers.
+
+## NOT capable of
+
 - Not a migration tool
-- Not designed for streaming workloads
+- Not designed for **streaming workloads**
 - Not suitable for complex data transformation (should use Databricks instead)
 - Not a data storage solution
+
+<br>
+
+## Azure Data Factory Components
+
+- There will be 2 main sources: **Storage** (ADLS, SQL database) and **Compute** (Databricks, Azure HDInsight).
+  <br>
+- When we use ADF, we need to create a component called **Linked Service** to define the connection with the sources.
+- Another component is called **Activity** to define the action we take on the resources.
+- The last 2 components are **Pipeline** and **Trigger**.
+
+## Create new pipeline in ADF
+
+- On the left menu bar, go to `Factory Resources` -> `Pipeline` -> `New Pipeline`. From there, you have numerous `Activities` to choose from.
+  <br>
+  Drag the tab `Notebook` to the working space (the tab Notebook in the working space is called `Activity`) and the working space itself is the whole `Pipeline`.
+- Create a `Linked Service` when choosing from the `Activity` tab (you can also create it in the left menu bar, tab `Manage`).
+
+  - In `Select Cluster` -> choose `Existing Interactive Cluster`
+  - In `Authentication type` -> choose `Managed Service Identity`
+
+    ```
+    Additional steps to set up the Managed Service Identity:
+
+    - Go to the Databricks Workspace -> on the left bar, choose tab Access control (IAM) -> Add -> Add role assignment.
+    - A form appears -> Select role 'Contributor'. In `Select` space, fill in the name of Azure Data Factory -> Save
+    ```
+
+- Click into the `Notebook` instance (the activity tab) -> Modify the inner `Settings` tab -> define `Notebook path`. <br>
+  Since we also have parameters for this notebook, and we also want to pass the value dynamically (not hard-coded), we can do as follow: click on the working space (for the `Pipeline`), define a `variable`. Then, click back on the `Notebook tab` -> `Settings` -> `base parameters` -> define the **name** and its corresponding **value** (click on `Add dynamic content` for the **value** part).
+  <br>
+  Additionally, you can also define a `parameter` (instead of a `variable`).
+- After already done with the pipeline, find the button `Debug` to validate + run the pipeline.
+
+## Improve the pipeline
+
+### 1. Checking the constraints
+
+There can be cases that the dataset is split into folders with their corresponding timestamps, however, we want to check if a timestamp does exist.
+
+There is an `Activity` called **Get Metadata**. Choose it -> in the inner `Dataset tab`, configure the setting and choose the appropriate storage account name. **Note:** you also have to create `Linked Service` for this one.
+
+With this Dataset, you need to configure the parameter, so that it can receive the params from the pipeline (the procedure is similar to the one we created for the pipeline).
+
+To check if the folder exists or not, there is a `Field list` inside the `Dataset tab` -> choose `Exists`. Then, link this `Activity` to `If-Else Condition Activity`.
+
+Inside the `Condition Activity`, for the `Expressions field`, add **Dynamic content** -> **@activity('Get Folder Details').output.Exists**
+
+### 2. Trigger dependency
+
+There is an **Activity** called `Execute Pipeline` -> configure the inner `Settings` -> `Invoke the pipeline` -> choose the pipeline that you want to execute.
+
+With this way, you can set pipelines to run in order (in case some pipelines is the prerequisites of the others).
+
+Now, suppose you want the pipelines to run in schedule, say, every Sunday at 6pm, you need to create a `Trigger`. From the homepage, on the left menu bar, go to `Manage` -> `Trigger` -> add a new trigger.
+
+There are different types of trigger:
+
+- Schedule: at a specific time
+- Tumbling window: has start and end time; you can even run in the past days.
+- Storage events (aka _event-based_ trigger): is triggered by the events that happened on block storage (e.g., a file arrives or a file is deleted -> the trigger is invoked)
+
+# Unity Catalog for Data Governance
+
+## Data Governance Overview
+
+\_There are 4 key functional areas:
+
+1. Data access control: control who has access to which data
+2. Data access audit: capture and record (history log) all access to data | who has been accepted/rejected/revoked
+3. Data lineage: capture upstream sources and downstream consumers
+4. Data discovery: ability to search for and discover authorized
+
+## Key concepts
+
+### Metatstore
