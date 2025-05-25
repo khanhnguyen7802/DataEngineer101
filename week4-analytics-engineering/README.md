@@ -9,7 +9,7 @@
 
 Prioritize user understandability and query performance over non-redundant data (3NF).
 
-## Elements of Dimensional Modelling
+## Elements of Dimensional Modelling (Star Schema)
 
 ![alt text](image.png)
 
@@ -27,8 +27,6 @@ Prioritize user understandability and query performance over non-redundant data 
 
 ### Discussion
 
-Dimensional Modeling is built on a **star schema** with fact tables surrounded by dimension tables.
-
 A good way to understand the architecture of Dimensional Modeling is by drawing an analogy between dimensional modeling and a restaurant:
 
 - Stage Area:
@@ -43,6 +41,24 @@ A good way to understand the architecture of Dimensional Modeling is by drawing 
   - Final presentation of the data.
   - Exposure to business stakeholder.
   - Similar to the dining room in a restaurant.
+
+Problem: there is data redundancy -> normalization to **snowflake schema**
+
+## Snowflake Schema 
+- A star schema is basically a snowflake schema having 1-level hierarchy
+- Snowflake schema is more NORMALIZED.
+
+
+|                    |                Advantages                |                                 Disadvantages                                  |
+| :----------------- | :----------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+|           |    Less space (storage cost) thanks to less redundancy  |        More complex                   |
+|           |    Less redundant data (easier to maintain/update)     |         More joins (more complex SQL queries)    |
+|     |         Solves write slow downs    |  Less performance      Data Marts / Cubes     |
+| |
+
+<br>
+
+
 
 # Intro to `dbt`
 
