@@ -1,0 +1,22 @@
+# base image
+FROM python:3.9
+
+# set the working directory in
+WORKDIR /app
+
+# create a parent directory (if not exist)
+RUN mkdir -p /app/green_trip_data
+
+
+# copy requirements file and add to the image 
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt jupyter
+
+# Copy notebook and convert it
+COPY ingest_data_manually.ipynb .
+
+# Convert the notebook to .py
+RUN jupyter nbconvert --to script ingest_data_manually.ipynb
+
+# Run the converted script
+CMD ["python", "ingest_data_manually.py"]

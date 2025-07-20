@@ -1,0 +1,55 @@
+services:
+  ingest_data:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes: # for mounting, so that we start again, the data remains
+      - ./green_trip_data:/app/green_trip_data
+    networks:
+      - pg-network
+    depends_on:
+      pgdatabase:
+        condition: service_healthy
+
+  pgdatabase: # name of the service (aka hostname)
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=green_trip
+    # volumes: # for mounting, such that we start again, the data remains; otherwise the database would be empty
+    #   - "./green_trip_data:/var/lib/postgresql/data:rw"
+    ports:
+      - "5434:5432" # Expose container’s port 5432 (postgresql)
+        # and map it to your host machine’s port 5434
+    networks:
+      - pg-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
+  pgadmin: # name of the service
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=root
+    volumes: # in order to keep tables persistent among connections
+            # If you omit the volume: pgAdmin configurations would reset when the container restarts
+      - "pgadmin_conn_data:/var/lib/pgadmin:rw"
+    ports:
+      - "8080:80"
+    networks:
+      - pg-network
+
+networks: # we need to define a pre-existing network; otherwise docker will create a new default one
+  pg-network:
+    name: pg-network
+    external: true
+
+# This creates a Docker-managed named volume called pgadmin_conn_data
+# Makes the volume available for use by any service in the compose file
+volumes:
+  pgadmin_conn_data:
