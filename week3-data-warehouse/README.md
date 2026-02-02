@@ -19,7 +19,7 @@
 - A system that aggregates data from multiple sources into a **single, central and consistent** data store
 - Used for reporting and data analysis
 
-![alt text](image.png)
+![alt text](./img/image.png)
 
 # BigQuery
 
@@ -41,7 +41,7 @@
 - Integer range partitioning
 - Number of partition limits is **4000**
 
-![alt text](image-1.png)
+![alt text](./img/image-1.png)
 
 - To create partitioned table, use:
 
@@ -68,7 +68,7 @@
 - Clustering improves _filter queries_ and _aggregate queries_.
 - Can specify up to 4 clustering columns
 - Clustering columns must be **top-level, non-repeated columns**.
-  ![alt text](image-2.png)
+  ![alt text](./img/image-2.png)
 
 - To query with clusters, use:
 

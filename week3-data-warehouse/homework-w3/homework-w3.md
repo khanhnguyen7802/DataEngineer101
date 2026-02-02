@@ -38,7 +38,7 @@ What is count of records for the 2024 Yellow Taxi Data?
 - What is the estimated amount of data that will be read when this query is executed on the External Table and the Table?
   - Solution:
 
-  ![alt text](image-3.png)
+  ![alt text](../img/image-3.png)
   -> `0 MB` for the External Table and `155.12 MB` for the Materialized (Regular) Table
 
 # Question 3
