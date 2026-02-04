@@ -1,0 +1,29 @@
+# Source: https://github.com/dbt-labs/dbt-core/blob/main/docker/Dockerfile
+
+ARG py_version=3.11.2
+
+FROM python:$py_version-slim-bullseye AS base
+
+RUN apt-get update \
+  && apt-get dist-upgrade -y \
+  && apt-get install -y --no-install-recommends
+RUN python -m pip install --upgrade "pip==24.0" "setuptools==69.2.0" "wheel==0.43.0" --no-cache-dir
+
+
+
+# # start a new build stage using the image called 'base'
+# # and give this stage the name 'dbt-core'.
+FROM base AS dbt-core
+HEALTHCHECK CMD dbt --version || exit 1
+WORKDIR /usr/app/dbt/
+RUN python -m pip install --no-cache-dir dbt-core && python -m pip install --upgrade dbt-core
+
+
+FROM dbt-core AS dbt-third-party
+# define variables that will be accessible during the build stage but not available after the image is built
+ARG dbt_third_party 
+RUN if [ "$dbt_third_party" ]; then \
+        python -m pip install --no-cache-dir "${dbt_third_party}"; \
+    else \
+        echo "No third party adapter provided"; \
+    fi \

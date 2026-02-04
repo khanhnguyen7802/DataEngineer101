@@ -1,0 +1,28 @@
+services:
+  duckdb:
+    image: duckdb/duckdb
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    network_mode: host
+
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+      target: dbt-third-party # name of the build stage from the Dockerfile you want to build and run.
+      args:
+        dbt_third_party: "dbt-duckdb"  # or whichever plugin you need
+    image: my-dbt:latest
+    volumes:
+      - ./dbt:/usr/app/dbt
+      - ~/.dbt:/root/.dbt
+    working_dir: /usr/app/dbt  
+    stdin_open: true
+    tty: true
+    command: sleep infinity
+    depends_on:
+      - duckdb
+  
