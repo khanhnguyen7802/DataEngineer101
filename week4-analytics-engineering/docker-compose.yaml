@@ -6,7 +6,7 @@ services:
     working_dir: /workspace
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: host # for the duckdb ui  
 
   dbt:
     build:

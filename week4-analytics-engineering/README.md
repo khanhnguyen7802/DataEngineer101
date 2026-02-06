@@ -1,30 +1,34 @@
-# Analytical Engineering 
-### History 
-- The term *Analytical Engineer* was first said in mid 2019. 
-- Literally analysts that can do a bit of engineering -> has the capacity of an analyst to explain to the stakeholder  
+# Analytical Engineering
 
-### Roles in a data team 
+### History
+
+- The term _Analytical Engineer_ was first said in mid 2019.
+- Literally analysts that can do a bit of engineering -> has the capacity of an analyst to explain to the stakeholder
+
+### Roles in a data team
+
 - Data engineer: prepares and maintain the infrastructure the data team needs
-- Data analyst: uses data to answer questions and solve problems 
-- Analytics engineer: introduces the good software engineering practices to the efforts of data analysts and data scientists. 
+- Data analyst: uses data to answer questions and solve problems
+- Analytics engineer: introduces the good software engineering practices to the efforts of data analysts and data scientists.
 
 ### Tooling
-1. Data loading 
-2. Data storing: cloud data warehouses like Snowflake, BigQuery, RedShift
-3. Data Modelling: Tools like dbt or Dataform 
-4. Data Presentation: BI tools like PowerBI, Google Data Studio, Looker, Tableau 
 
-### ETL vs ELT 
-- `Extract -> Transform -> Load` 
-  - Slightly more stable and compliant data analysis 
-  - Higher storage and compute costs 
+1. Data loading
+2. Data storing: cloud data warehouses like Snowflake, BigQuery, RedShift
+3. Data Modelling: Tools like dbt or Dataform
+4. Data Presentation: BI tools like PowerBI, Google Data Studio, Looker, Tableau
+
+### ETL vs ELT
+
+- `Extract -> Transform -> Load`
+  - Slightly more stable and compliant data analysis
+  - Higher storage and compute costs
 
 - `Extract -> Load -> Transform`
-  -  Faster and more flexible data analysis 
-  - Lower cost and lower maintenance 
+  - Faster and more flexible data analysis
+  - Lower cost and lower maintenance
 
 ![alt text](image-11.png)
-
 
 # (Kimball's) Dimensional Modelling
 
@@ -48,13 +52,14 @@ Prioritize user understandability and query performance over non-redundant data 
 - _verbs_ (e.g., sales, orders, ...)
 
 ### Dimensions tables
+
 - Provide context to a business process
 - Correspond to a business entity
 - _nouns_ (e.g., customers, products, ...)
 
 - Dimensions come into 2 flavors:
   - Slowly changing
-  - Fixed 
+  - Fixed
 
 ### Architecture of Dimensional Modelling
 
@@ -75,47 +80,45 @@ A good way to understand the architecture of Dimensional Modeling is by drawing 
 
 Problem: there is data redundancy -> normalization to **snowflake schema**
 
-## Snowflake Schema 
+## Snowflake Schema
+
 - A star schema is basically a snowflake schema having 1-level hierarchy
 - Snowflake schema is more NORMALIZED.
 
-
-|                    |                Advantages                |                                 Disadvantages                                  |
-| :----------------- | :----------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
-|           |    Less space (storage cost) thanks to less redundancy  |        More complex                   |
-|           |    Less redundant data (easier to maintain/update)     |         More joins (more complex SQL queries)    |
-|     |         Solves write slow downs    |  Less performance      Data Marts / Cubes     |
-| |
+|     |                     Advantages                      |             Disadvantages             |
+| :-- | :-------------------------------------------------: | :-----------------------------------: |
+|     | Less space (storage cost) thanks to less redundancy |             More complex              |
+|     |   Less redundant data (easier to maintain/update)   | More joins (more complex SQL queries) |
+|     |               Solves write slow downs               |  Less performance Data Marts / Cubes  |
+|     |
 
 <br>
 
 ## OLTP-to-OLAP continuum (4-layer modeling)
+
 ![alt text](image-10.png)
 
 1. **Production Database Snapshots** <br>
-The starting point is usually OLTP systems. They handle real-time transactions: customer placing an order, transferring money, or updating account details. <br>
-However, they are not designed for complex data analysis => This is where **production database snapshots** come into play. These snapshots provide a periodic snapshot of operational data, preserving the state of the system at a given moment. <br>
-**Next step:** aggregate those data into a big whole **master data.** 
+   The starting point is usually OLTP systems. They handle real-time transactions: customer placing an order, transferring money, or updating account details. <br>
+   However, they are not designed for complex data analysis => This is where **production database snapshots** come into play. These snapshots provide a periodic snapshot of operational data, preserving the state of the system at a given moment. <br>
+   **Next step:** aggregate those data into a big whole **master data.**
 
 2. **Master Data** <br>
-In the *absence of a **master data layer***, analysts have to work with raw, inconsistent data. Master data provides a single source of truth and organizing data sources. <br>
-Imagine, without a unified view of the customer, you end up with fragmented and sometimes contradictory data, which makes it difficult to draw meaningful insights.<br>
-In other words, you put everything together in the master data.
+   In the \*absence of a **master data layer\***, analysts have to work with raw, inconsistent data. Master data provides a single source of truth and organizing data sources. <br>
+   Imagine, without a unified view of the customer, you end up with fragmented and sometimes contradictory data, which makes it difficult to draw meaningful insights.<br>
+   In other words, you put everything together in the master data.
 
 3. **OLAP Cubes** <br>
-Once we have the master data, we process it through **OLAP cubes**. For example, an OLAP cube might allow a company to analyze sales data by region or product category. <br>
-Imagine, from the master data, you split into related chunks by using OLAP cubes
+   Once we have the master data, we process it through **OLAP cubes**. For example, an OLAP cube might allow a company to analyze sales data by region or product category. <br>
+   Imagine, from the master data, you split into related chunks by using OLAP cubes
 
 4. **Metrics** <br>
-At the end of the continuum, we reach **metrics** — the ultimate output of the entire data pipeline. Whether it’s tracking sales performance, customer behavior, or operational efficiency, these metrics provide the actionable insights that drive business decisions. <br>
-In other words, from chunks in the OLAP cubes, you smash into 1 value and that's the metrics.
-
-
+   At the end of the continuum, we reach **metrics** — the ultimate output of the entire data pipeline. Whether it’s tracking sales performance, customer behavior, or operational efficiency, these metrics provide the actionable insights that drive business decisions. <br>
+   In other words, from chunks in the OLAP cubes, you smash into 1 value and that's the metrics.
 
 ## Cumulative Table Design
+
 There is a problem when recording user's data: some users only show up occasionally, however, the **master data** must record the full history of those.
-
-
 
 # Intro to `dbt`
 
@@ -157,9 +160,10 @@ For integration with **BigQuery** we will use the **dbt Cloud IDE** -> local ins
 <br>
 Using dbt with a **local Postgres** database can be done with **dbt Core**, which can be installed locally and connected to Postgres and run models through the CLI.
 
-## dbt setup 
- 
+## dbt setup
+
 ### Alternative A: Using dbt Cloud
+
 ![alt text](image-3.png)
 
 #### Google Cloud Storage setup
@@ -198,11 +202,11 @@ Save the configuration, test the connection and then `Save`.
 - Step 6: there's a green button saying _"Initialize dbt project"_ -> click it and it'll create necessary files of the project.
   ![alt text](image-9.png)
 
+### Alternative B: Using local dbt
 
-### Alternative B: Using local dbt 
 #### Local Setup Guide
 
-This guide walks you through setting up a **local analytics engineering** environment using DuckDB and dbt.
+This guide walks you through setting up a **local analytics engineering** environment using DuckDB and dbt via Docker.
 
 <div align="center">
 
@@ -211,44 +215,41 @@ This guide walks you through setting up a **local analytics engineering** enviro
 
 </div>
 
->[!NOTE]
->*This guide will explain how to do the setup manually. If you want an additional challenge, try to run this setup using Docker Compose or a Python virtual environment.*
-
-**Important**: All dbt commands must be run from inside the `taxi_rides_ny/` directory. The setup steps below will guide you through:
+**Important**: The setup steps below will guide you through:
 
 1. Installing the necessary tools
 2. Configuring your connection to **DuckDB**
 3. Loading the NYC taxi data
 4. Verifying everything works
 
+### Step 1: Install dbt + duckdb
 
-Step 1: Install DuckDB
+For more information, refer to [Dockerfile.dbt](./Dockerfile.dbt).
 
-`DuckDB` is a fast, **embedded database** that works great for local analytics workloads (OLAP). To install DuckDB, follow the instruction on the [official site](https://duckdb.org/docs/installation) for your specific operating system.
+> TL;DR: `Dockerfile.dbt` pulls a **Python** image, then install `dbt-core` and `dbt-adapter` (i.e., `dbt-duckdb`) via:
 
-> [!TIP]
-> *You can install DuckDB in two ways. You can install the CLI or install the client API for your favorite programming language (in the case of Python, you can use `pip install duckdb`). In this guide, I will install using Docker (duckdb image).*
-
-## Step 2: Install dbt + duckdb
-For more information, refer to [Dockerfile.dbt](./Dockerfile.dbt). 
-
-> TL;DR: `Dockerfile.dbt` pulls a **Python** image, then install `dbt-core` and `dbt-adapter` (i.e., `dbt-duckdb`) via:   
 ```bash
 pip install dbt-core # core dbt framework
 pip install dbt-duckdb # duckdb adapter for dbt
 ```
 
 > [!NOTE]
-> *If you use dbt core, you will need to install adapters for every single warehouses that you work with.* 
-
+> _If you use dbt core, you will need to install adapters for every single warehouses that you work with._
 
 Since we also use `duckdb` as a service, that image is included in [docker-compose.yml](./docker-compose.yaml).
 
-## Step 3: Run the container
+`DuckDB` is a fast, **embedded database** that works great for local analytics workloads (OLAP). To install DuckDB, follow the instruction on the [official site](https://duckdb.org/docs/installation) for your specific operating system.
+
+> [!TIP]
+> _You can install DuckDB in two ways. You can install the CLI or install the client API for your favorite programming language (in the case of Python, you can use `pip install duckdb`). In this guide, I will install using Docker (duckdb image)._
+
+### Step 2: Run the container
+
 Navigate to the folder where **Dockerfile** and **docker-compose.yaml** locate, in the terminal, run `docker compose up -d`.
 
-## Step 4: Check if the services are working
-- For dbt, type in terminal: `docker compose exec dbt bash` -> it will lead to the dbt container at working directory (i.e., /usr/app/dbt), then run `dbt --version` to see if it is properly installed. 
+### Step 3: Check if the services are working
+
+- For dbt, type in terminal: `docker compose exec dbt bash` -> it will lead to the dbt container at working directory (i.e., /usr/app/dbt), then run `dbt --version` to see if it is properly installed.
 
 ![alt text](image-12.png)
 
@@ -260,10 +261,11 @@ To get out the container, type: **exit**.
 
 ![alt text](image-13.png)
 
-## Step 5: Configure dbt Profile
+### Step 4: Configure dbt Profile
+
 Run `dbt init taxi_rides_ny` to initialize the project and with the name `taxi_rides_ny`. Then, you need to configure your dbt profile to connect to DuckDB.
 
-### Create or Update `~/.dbt/profiles.yml`
+#### Create or Update `~/.dbt/profiles.yml`
 
 The dbt profile tells dbt how to connect to your database. Update the file `~/.dbt/profiles.yml` with the following content:
 
@@ -280,7 +282,7 @@ taxi_rides_ny:
       extensions:
         - parquet
       settings:
-        memory_limit: '2GB'
+        memory_limit: "2GB"
         preserve_insertion_order: false
 
     # DuckDB Production profile
@@ -292,7 +294,7 @@ taxi_rides_ny:
       extensions:
         - parquet
       settings:
-        memory_limit: '2GB'
+        memory_limit: "2GB"
         preserve_insertion_order: false
 
 # Troubleshooting:
@@ -301,7 +303,7 @@ taxi_rides_ny:
 # - Expected build time: 5-10 minutes on most systems
 ```
 
-## Step 6: Download and Ingest Data
+### Step 5: Download and Ingest Data
 
 Now that your dbt profile is configured, let's load the taxi data into DuckDB. Navigate to the dbt project directory and run the ingestion script.
 
@@ -380,7 +382,7 @@ if __name__ == "__main__":
 
 This script downloads yellow and green taxi data from 2019-2020, creates the `prod` schema, and loads the raw data into DuckDB. The download may take several minutes depending on your internet connection.
 
-## Step 5: Test the dbt Connection
+### Step 6: Test the dbt Connection
 
 Verify dbt can connect to your DuckDB database:
 
@@ -388,7 +390,7 @@ Verify dbt can connect to your DuckDB database:
 dbt debug
 ```
 
-## Step 6: Install dbt Power User Extension (VS Code Users)
+### Step 7: Install dbt Power User Extension (VS Code Users)
 
 If you're using Visual Studio Code, install the **dbt Power User** extension to enhance your dbt development experience.
 
@@ -396,11 +398,11 @@ If you're using Visual Studio Code, install the **dbt Power User** extension to 
 
 dbt Power User is a VS Code extension that provides:
 
-* SQL syntax highlighting and formatting for dbt models
-* Inline column-level lineage visualization
-* Auto-completion for dbt models, sources, and macros
-* Interactive documentation preview
-* Model compilation and execution directly from the editor
+- SQL syntax highlighting and formatting for dbt models
+- Inline column-level lineage visualization
+- Auto-completion for dbt models, sources, and macros
+- Interactive documentation preview
+- Model compilation and execution directly from the editor
 
 ### Why Not Use the Official dbt Extension?
 
@@ -408,10 +410,10 @@ dbt Labs released an official VS Code extension called [dbt Extension](https://m
 
 Since we're using **dbt Core** with DuckDB for local development, we need the community-maintained **dbt Power User by AltimateAI** extension instead. This extension:
 
-* Works seamlessly with dbt Core (not just dbt Cloud)
-* Supports all dbt adapters, including DuckDB
-* Is actively maintained and open source
-* Provides a rich feature set for local development
+- Works seamlessly with dbt Core (not just dbt Cloud)
+- Supports all dbt adapters, including DuckDB
+- Is actively maintained and open source
+- Provides a rich feature set for local development
 
 ### Installation
 
@@ -427,10 +429,10 @@ Alternatively, install it from the [VS Code Marketplace](https://marketplace.vis
 
 ## Additional Resources
 
-* [DuckDB Documentation](https://duckdb.org/docs/)
-* [dbt Documentation](https://docs.getdbt.com/)
-* [dbt-duckdb Adapter](https://github.com/duckdb/dbt-duckdb)
-* [NYC Taxi Data Dictionary](https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf)
+- [DuckDB Documentation](https://duckdb.org/docs/)
+- [dbt Documentation](https://docs.getdbt.com/)
+- [dbt-duckdb Adapter](https://github.com/duckdb/dbt-duckdb)
+- [NYC Taxi Data Dictionary](https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf)
 
 # Developing with `dbt`
 
@@ -457,26 +459,21 @@ CREATE TABLE my_schema.my_model AS (
 ```
 
 - The `config()` function at the beginning of a model to define a **materialization strategy**: a strategy for persisting dbt models in a warehouse.
-
   - `ephemeral`: temporary and exist only for the duration of a single dbt run (similar to CTE in sql).
   - `view`: are virtual tables created by dbt that can be queried like regular tables.
   - `table`: are physical representations of data that are created and stored in the database | model will be rebuilt as a table on each run.
   - `incremental`: are a powerful feature of dbt that allow for efficient updates to existing tables, reducing the need for **full data** refreshes.
 
   ## The FROM clause
-
   - **Sources**:
-
     - Defines the _sources_ of data to be used.
     - Configuration is defined in `.yml file` in the _models_ folder
     - Source **freshness** can also be defined, which is useful to check whether data pipelines are working properly.
 
   - **Seeds**:
-
     - CSV files but stored in our repository.
     - Better version controlling & Equivalent to a copy command
     - Seed usage:
-
       - Add a CSV file to your `seeds` folder.
       - Run the `dbt seed` command to create a table in our Data Warehouse.
 
@@ -545,7 +542,6 @@ CREATE TABLE my_schema.my_model AS (
   ## Defining a source and creating a model
 
   We will begin by creating 2 new folders under our `models` folder:
-
   - `staging` will have the raw models.
   - `core` will have the **models** that we will expose at the end to the BI tool, stakeholders, etc.
 
@@ -557,16 +553,16 @@ CREATE TABLE my_schema.my_model AS (
   version: 2
 
   sources:
-      - name: staging
-        database: your_project
-        schema: trips_data_all
+    - name: staging
+      database: your_project
+      schema: trips_data_all
 
-        tables:
-            - name: green_tripdata
-            - name: yellow_tripdata
+      tables:
+        - name: green_tripdata
+        - name: yellow_tripdata
   ```
-  - We define our **sources** in the `schema.yml` model properties file where we define the 2 tables for yellow and green taxi data as our sources.
 
+  - We define our **sources** in the `schema.yml` model properties file where we define the 2 tables for yellow and green taxi data as our sources.
 
   ```sql
   -- sgt_green_tripdata.sql
@@ -579,10 +575,11 @@ CREATE TABLE my_schema.my_model AS (
   - This query will create a **view** in the `staging` dataset/schema in our database.
   - We make use of the `source()` function to access the green taxi data table, which is defined inside the `schema.yml` file.
 
-  ## Macros 
+  ## Macros
+
   **Macros** are pieces of code in Jinja that can be reused, similar to functions in other languages.
 
-  **dbt** already includes a series of macros like *config()*, *source()* and *ref()*, but custom macros can also be defined.
+  **dbt** already includes a series of macros like _config()_, _source()_ and _ref()_, but custom macros can also be defined.
 
   **Macros** allow us to add features to SQL that aren't available, such as:
   - Use control structures such as **if** statements or **for** loops.
@@ -591,12 +588,12 @@ CREATE TABLE my_schema.my_model AS (
   - Abstract snippets of SQL into reusable macros.
 
   There are 3 kinds of Jinja delimiters:
-
   - `{% ... %}` for **statements** (control blocks, macro definitions)
   - `{{ ... }}` for **expressions** (literals, math, comparisons, logic, macro calls...)
   - `{# ... #}` for **comments**.
-  
+
   E.g., a **macro definition**:
+
   ```jinja
   {# This macro returns the description of the payment_type #}
 
@@ -613,36 +610,42 @@ CREATE TABLE my_schema.my_model AS (
 
   {% endmacro %}
   ```
+
   - The `macro` keyword states that the line is a macro definition. It includes the name of the macro as well as the parameters.
-  - The code of the macro itself goes *between* 2 statement delimiters. The second statement delimiter contains an `endmacro` keyword.
+  - The code of the macro itself goes _between_ 2 statement delimiters. The second statement delimiter contains an `endmacro` keyword.
   - In the code, we can access the macro parameters using expression delimiters.
   - The macro returns the **code** we've defined rather than a specific value.
 
   Here's how we use the **macro**:
+
   ```sql
   SELECT
     {{ get_payment_type_description('payment_type') }} AS payment_type_description,
     congestion_surcharge::double precision
   FROM {{ source('staging','green_tripdata') }}
   WHERE vendorid IS NOT NULL
-  ``` 
+  ```
 
-  ## Packages 
-  Macros can be exported to **packages** (similar to how classes and functions can be exported to libraries in other languages). 
-  
+  ## Packages
+
+  Macros can be exported to **packages** (similar to how classes and functions can be exported to libraries in other languages).
+
   **Packages** contain standalone **dbt projects** with models and macros that tackle a specific problem area.
 
   When you add a package to your project, the package's models and macros become part of your own project. A list of useful packages can be found in the [dbt package hub](https://hub.getdbt.com/).
 
   To use a package, you must first create a `packages.yml` file in the **root** of your work directory. Here's an example:
+
   ```sql
   packages:
   - package: dbt-labs/dbt_utils
     version: 0.8.0
   ```
+
   In case it has not loaded yet, you can run `dbt deps`.
 
-  ## Variables 
+  ## Variables
+
   Variables can be defined in 2 different ways:
   - Under the `vars` keyword inside `dbt_project.yml`.
 
@@ -652,11 +655,13 @@ CREATE TABLE my_schema.my_model AS (
   ```
 
   - As arguments when building or running on your project.
+
   ```bash
   dbt build --m <your-model.sql> --var 'is_test_run: false'
   ```
 
-  Variables can also be used with `var()` macro. E.g., 
+  Variables can also be used with `var()` macro. E.g.,
+
   ```sql
   {% if var('is_test_run', default=true) %}
 
@@ -666,4 +671,3 @@ CREATE TABLE my_schema.my_model AS (
   ```
 
   ## Testing and Documenting `dbt` models
-  
