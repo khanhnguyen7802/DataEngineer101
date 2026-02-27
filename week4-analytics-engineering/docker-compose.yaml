@@ -17,12 +17,15 @@ services:
         dbt_third_party: "dbt-duckdb"  # or whichever plugin you need
     image: my-dbt:latest
     volumes:
+      - .:/workspace
       - ./dbt:/usr/app/dbt
       - ~/.dbt:/root/.dbt
-    working_dir: /usr/app/dbt  
+    working_dir: /usr/app/dbt/taxi_rides_ny
     stdin_open: true
     tty: true
     command: sleep infinity
+    ports:
+      - "8081:8080" # for generated docs ui
     depends_on:
       - duckdb
   
