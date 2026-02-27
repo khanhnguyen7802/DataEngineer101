@@ -12,7 +12,6 @@
 
 > In a real company setup, data flows in from all over the place — backend systems, frontend apps, third-party APIs etc ... . All of that gets loaded into warehouse (BigQuery, Snowflake, etc ...), and `dbt` is the layer that **transforms that raw data** into something the **business** can actually **consume**.
 
-
 ## How does dbt work?
 
 ![alt text](image-2.png)
@@ -25,22 +24,23 @@ A **model** is a .sql file with a `SELECT` statement; no DDL or DML is used. dbt
 dbt has 2 main components: **dbt Core** and **dbt Cloud**:
 
 🏠 `dbt Core`: open-source project that allows the data transformation.
-  - Builds and runs a dbt project (**.sql** and **.yaml** files).
-  - Includes SQL compilation logic, macros and database adapters.
-  - Includes a CLI interface to **run dbt commands locally**.
-  - Open-source and free to use.
+
+- Builds and runs a dbt project (**.sql** and **.yaml** files).
+- Includes SQL compilation logic, macros and database adapters.
+- Includes a CLI interface to **run dbt commands locally**.
+- Open-source and free to use.
 
 ☁️ `dbt Cloud`: SaaS application to develop and manage dbt projects.
-  - **Web-based** IDE to develop, run and test a dbt project.
-  - Jobs orchestration.
-  - Logging and alerting.
-  - Intergrated documentation.
-  - Free for individuals (one developer seat).
+
+- **Web-based** IDE to develop, run and test a dbt project.
+- Jobs orchestration.
+- Logging and alerting.
+- Intergrated documentation.
+- Free for individuals (one developer seat).
 
 > For integration with **BigQuery** we will use the **dbt Cloud IDE** -> local installation of dbt core isn't required.
-<br>
-Using dbt with a **local Postgres** database can be done with **dbt Core**, which can be installed locally and connected to Postgres and run models through the CLI.
-
+> <br>
+> Using dbt with a **local Postgres** database can be done with **dbt Core**, which can be installed locally and connected to Postgres and run models through the CLI.
 
 # dbt setup
 
@@ -81,12 +81,15 @@ Save the configuration, test the connection and then `Save`.
 - Step 5: access the Cloud IDE to use **dbt**.
   ![alt text](image-8.png)
 
-- Step 6: there's a green button saying _"Initialize dbt project"_ -> click it and it'll create necessary files of the project.    
-![alt text](image-9.png)
+- Step 6: there's a green button saying _"Initialize dbt project"_ -> click it and it'll create necessary files of the project.  
+  ![alt text](image-9.png)
 
 ## Alternative B: Using local dbt
 
 ### Local Setup Guide
+
+> [!NOTE]
+> 📺 I also made a [tutorial video](https://youtu.be/ew4MvyHwbho), so you can either read the below guide, or follow along the video, or do both 😘 Whatever suits you !!!
 
 This guide walks you through setting up a **local analytics engineering** environment using DuckDB and dbt via Docker.
 
@@ -152,13 +155,12 @@ Run `dbt init taxi_rides_ny` to initialize the project and with the name `taxi_r
 The dbt profile tells dbt how to connect to your database. Update the file `~/.dbt/profiles.yml` with the following content:
 
 ```yaml
-taxi_rides_ny:            # -> dbt project name, needs to match exactly 
-                          # the profile in dbt_project.yml file
-  target: dev             # defines the profile you want to use 
+taxi_rides_ny: # -> dbt project name, needs to match exactly
+  # the profile in dbt_project.yml file
+  target: dev # defines the profile you want to use
   outputs:
-    
-    dev:                  # DuckDB Development profile
-      type: duckdb        # type of data warehouse you are connecting to
+    dev: # DuckDB Development profile
+      type: duckdb # type of data warehouse you are connecting to
       path: taxi_rides_ny.duckdb
       schema: dev
       threads: 1
@@ -168,8 +170,7 @@ taxi_rides_ny:            # -> dbt project name, needs to match exactly
         memory_limit: "2GB"
         preserve_insertion_order: false
 
-    
-    prod:                 # DuckDB Production profile
+    prod: # DuckDB Production profile
       type: duckdb
       path: taxi_rides_ny.duckdb
       schema: prod
@@ -185,8 +186,9 @@ taxi_rides_ny:            # -> dbt project name, needs to match exactly
 # - If you have 16GB+ RAM, you can increase to '4GB' for faster builds
 # - Expected build time: 5-10 minutes on most systems
 ```
->[!TIP]
-> To check the location of your `profiles.yml` file, you can run `dbt debug --config-dir`. 
+
+> [!TIP]
+> To check the location of your `profiles.yml` file, you can run `dbt debug --config-dir`.
 
 ![alt text](image-14.png)
 
@@ -277,7 +279,7 @@ Verify dbt can connect to your DuckDB database:
 dbt debug
 ```
 
-### *(Optional)* Step 7: Install dbt Power User Extension (VS Code Users)
+### _(Optional)_ Step 7: Install dbt Power User Extension (VS Code Users)
 
 If you're using Visual Studio Code, install the **dbt Power User** extension to enhance your dbt development experience.
 
@@ -311,11 +313,9 @@ Since we're using **dbt Core** with DuckDB for local development, we need the co
 
 Alternatively, install it from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=innoverio.vscode-dbt-power-user).
 
-
 # Additional Resources
 
 - [DuckDB Documentation](https://duckdb.org/docs/)
 - [dbt Documentation](https://docs.getdbt.com/)
 - [dbt-duckdb Adapter](https://github.com/duckdb/dbt-duckdb)
 - [NYC Taxi Data Dictionary](https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf)
-
