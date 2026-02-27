@@ -1,5 +1,24 @@
 # Developing with `dbt`
 
+# Table of Contents
+- [dbt project structure](#dbt-project-structure)
+- [dbt Sources (defining source and create model)](#dbt-sources-defining-source-and-create-model)
+- [dbt Seeds && Macros](#dbt-seeds--macros)
+- [dbt Documentations](#dbt-documentations)
+  - [What can you document in dbt?](#what-can-you-document-in-dbt)
+  - [Generate and View docs](#generate-and-view-docs)
+- [dbt Tests](#dbt-tests)
+  - [Singular tests](#singular-tests)
+  - [Source Freshess tests](#source-freshess-tests)
+  - [Generic tests (common)](#generic-tests-common)
+  - [Custom Generic tests](#custom-generic-tests)
+  - [Unit tests](#unit-tests)
+  - [Model contracts](#model-contracts)
+- [dbt Packages](#dbt-packages)
+- [Core workflow in dbt](#core-workflow-in-dbt)
+  - [Useful commands in dbt](#useful-commands-in-dbt)
+  - [Flags in dbt](#flags-in-dbt) 
+
 ## dbt project structure
 
 ```py
@@ -507,3 +526,122 @@ FROM {{ source('raw_data', 'green_tripdata') }}
 ```
 
 📖 Read more about [dbt Packages](https://docs.getdbt.com/docs/build/packages) and [dbt deps command](https://docs.getdbt.com/reference/commands/deps).
+
+# Core workflow in dbt 
+## Useful commands in dbt 
+### dbt compile
+This command takes all the models — with their Jinja, `ref()`, `source()` calls and everything — and **outputs the fully resolved SQL** into `target/compiled/`. No data moves, nothing hits the warehouse. It's just pure SQL sitting there for you to inspect.
+
+✅ It's the fastest way to catch Jinja errors — way quicker than waiting for a full `dbt run`. 
+✅ It's completely free — no compute, no warehouse cost. Good habit to run after making changes.
+
+
+
+### dbt run
+This command **materializes every model** in your project.\
+➡️ Views become views, tables become tables, incremental models get incremental logic applied — whatever you configured. 
+
+> Models run in dependency order, so dbt figures out the sequence for you. This is your go-to during active development when you just want to see your models built.
+
+### dbt test
+This command **runs all the tests** in the project — generic tests, singular tests, unit tests, all of it. Nothing gets built here, it just validates what's already in the warehouse.
+
+
+### dbt build *(important)* ⭐
+> 💡 In short: dbt build = dbt run + dbt test + dbt seed + dbt snapshot. 
+
+However, it's not just running them sequentially — it's **DAG-aware**. It knows the right order, and if something fails along the way, it skips everything downstream of that failure rather than wasting compute on models that are going to break anyway.
+
+➡️ This is what you want for CI, production runs, or anytime you need confidence that your whole project is solid.
+
+
+### dbt retry
+❌ If a `dbt build` or `dbt run` fails partway through, don't just re-run the whole thing from scratch. 
+
+✅ `dbt retry` re-executes from the point of failure by reading the **run_results.json** file from the previous run. It automatically identifies **which nodes failed** and **re-runs those nodes** + **everything downstream** of them.
+
+> How it works:
+> 1. dbt looks at `target/run_results.json` from the last command
+> 2. It identifies **failed nodes** and **skipped nodes** (anything downstream of a failure)
+> 3. It re-runs only those nodes, reusing the same selection criteria from the original command.
+> 4. If the previous command completed successfully, `dbt retry` finishes as `no operation`.
+
+➡️ Saves a lot of time on big projects, especially when a single model fails deep in the DAG.
+
+## Flags in dbt 
+### --help / -h
+*(Works on any command)* 
+
+`dbt --help` gives you the full list (e.g., `dbt run --help` gives you flags specific to run). 
+
+### --version / -V
+Tells you which version of dbt you have installed. Also lets you know if there's an update available.
+
+### --full-refresh / -f
+*(Used with `dbt run` or `dbt build`)* 
+
+When you have an **incremental model**, it normally just **appends new rows**. `--full-refresh` drops the whole thing and rebuilds from scratch. 
+Handy when historical data has changed, you've got duplicates, or you just want to make sure **everything is clean**. 
+
+>Most teams do this on a regular schedule — maybe once a month — just to keep things tidy.
+
+
+### --fail-fast
+Runs a stricter version of dbt. Normally warnings don't stop execution — with `--fail-fast` they do. 
+
+➡️ Good for CI or any time you want to be sure nothing slips through. Better to fail loud than to be permissive and find surprises later.
+
+### --target / -t
+Controls **which profile target** dbt runs against. *(By default everything runs on **dev**. But you can override it)*: `dbt run --target prod`
+
+Works with `dbt run`, `dbt build`, `dbt test`, `dbt snapshot` — basically any command that touches the warehouse.
+
+> [!TIP]
+> Best practice: developers work in dev, production runs use --target prod.
+
+### --select / -s *(important)*
+Lets you run **ONLY SPECIFIC PARTS** of your project instead of everything. There are a few ways to use it:
+
+- By model name — just give it the model name (no .sql needed):
+  `dbt run --select stg_green_tripdata`
+
+- By directory path — everything in a folder:
+  `dbt run --select models/staging`
+
+- By tag: `dbt run --select tag:nightly`
+
+- With graph operators (the **+ sign**) — this is where it gets really useful. The + lets you pull in upstream or downstream dependencies:
+
+  ```bash
+  # Run stg_green_tripdata and all upstream dependencies
+  dbt run --select +stg_green_tripdata
+
+  # Run fct_trips and all downstream dependencies
+  dbt run --select fct_trips+
+
+  # Run dim_zones plus everything upstream AND downstream
+  dbt run --select +dim_zones+
+  
+  💠 `+my_model` — builds my_model and everything upstream of it (all its ancestors)
+  💠 `my_model+` — builds my_model and everything downstream of it (all its descendants)
+  💠 `+my_model+` — both directions. Everything upstream, the model itself, and everything downstream
+  ```
+
+- With state selectors — instead of guessing what changed, let dbt figure it out:
+`dbt build --select state:modified+ --state ./prod-artifacts`
+
+  - `state:new` — only files you just created
+  - `state:modified` — anything that's changed since the last run
+  - Add + after to include downstream dependencies of modified models
+
+> [!NOTE] 
+> You need artifacts from a previous run stored somewhere persistent (not the same `target/` directory you're currently writing to)\
+On **dbt Cloud**, this is handled automatically — production artifacts are stored and accessible for comparison\
+On **dbt Core**, you need to manually store artifacts (especially `manifest.json`) somewhere (e.g., a cloud bucket, a separate directory, version control, etc.).\
+Point --state to where those previous artifacts live.\
+dbt compares your current code **against those artifacts** to determine what's new or modified.
+
+🔑 The key is that you're comparing against a *different environment's artifacts* (usually production) or a *previous point in time* — not against the directory you're currently building into. This lets you **run only what's changed since your last production deployment**, which is incredibly useful for CI/CD workflows.
+
+> [!TIP] 
+> Storing those JSON artifacts persistently is also just good practice in general — you can use them to analyze how your project evolves over time.
