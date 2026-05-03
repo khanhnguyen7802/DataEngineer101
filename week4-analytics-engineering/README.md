@@ -32,7 +32,7 @@ An analytic engineer might touch:
 
 ➡️ This is the approach that cloud warehouses made possible — storage is cheap, so just load everything and figure out the transformations later.
 
-![alt text](image-11.png)
+![alt text](./imgs/image-11.png)
 
 > ELT is the dominant approach now, and it's the one we'll be working with. dbt fits squarely into the "T" of ELT — it runs transformations inside the warehouse using SQL.
 
@@ -46,7 +46,7 @@ The priority is **user understandability** and **query performance** over non-re
 
 ## Elements of Dimensional Modelling (Star Schema)
 
-![alt text](image.png)
+![alt text](./imgs/image.png)
 
 ### Facts tables
 
@@ -99,7 +99,7 @@ Problem: there is data redundancy -> normalization to **snowflake schema**
 
 ## OLTP-to-OLAP continuum (4-layer modeling)
 
-![alt text](image-10.png)
+![alt text](./imgs/image-10.png)
 
 1. **Production Database Snapshots** <br>
    The starting point is usually OLTP systems. They handle real-time transactions: customer placing an order, transferring money, or updating account details. <br>

@@ -8,13 +8,13 @@
 
 ➡️ You write **SQL (or Python)** to define your transformations, and **dbt** handles the rest: compiling it, running it against the warehouse, managing dependencies, and persisting the results as tables or views.
 
-![alt text](image-1.png)
+![alt text](imgs/image-1.png)
 
 > In a real company setup, data flows in from all over the place — backend systems, frontend apps, third-party APIs etc ... . All of that gets loaded into warehouse (BigQuery, Snowflake, etc ...), and `dbt` is the layer that **transforms that raw data** into something the **business** can actually **consume**.
 
 ## How does dbt work?
 
-![alt text](image-2.png)
+![alt text](imgs/image-2.png)
 dbt works by defining a **modeling layer** that sits on top of our Data Warehouse. The modeling layer will turn tables into **models** which we will then transform into _derived models_, which can be then stored into the Data Warehouse for persistence.
 
 A **model** is a .sql file with a `SELECT` statement; no DDL or DML is used. dbt will compile the file and run it in our Data Warehouse.
@@ -46,7 +46,7 @@ dbt has 2 main components: **dbt Core** and **dbt Cloud**:
 
 ## Alternative A: Using dbt Cloud
 
-![alt text](image-3.png)
+![alt text](imgs/image-3.png)
 
 ### Google Cloud Storage setup
 
@@ -56,7 +56,7 @@ dbt has 2 main components: **dbt Core** and **dbt Cloud**:
   <br> Additionally, if you want to edit the roles (add, remove, update), go to **IAM and admin** -> **IAM** -> adjust roles.
 - Step 4: Add key -> Create a new key -> choose the **JSON** option -> Download that file (that is your credentials). <br>
   In case you need to create the key again, just `IAM and admin` -> `Service accounts` -> click on the service account that you want to generate the key -> `Keys` tab -> `Add key`.
-  ![alt text](image-4.png)
+  ![alt text](imgs/image-4.png)
 
 - Step 5: in your workspace, put the Google Credentials in such structure: `.google\credentials\google_credentials.json`.
 
@@ -65,10 +65,10 @@ dbt has 2 main components: **dbt Core** and **dbt Cloud**:
 - Step 1: Go to [dbt](https://www.getdbt.com/pricing) and sign up for the Free developer seat.
 
 - Step 2: Create a project, then set up a database connection -> choose **BigQuery**
-  ![alt text](image-5.png)
+  ![alt text](imgs/image-5.png)
 
 - Step 3: Upload the `JSON` key file to use the service account.
-  ![alt text](image-6.png)
+  ![alt text](imgs/image-6.png)
 
 Save the configuration, test the connection and then `Save`.
 
@@ -76,13 +76,13 @@ Save the configuration, test the connection and then `Save`.
 
   \***\*NOTE:** to edit your project configuration, you can do the following steps: go to the **menu bar** on the left, click on the icon of your **organization** -> choose `Account settings` -> choose `Projects` tab.
 
-  ![alt text](image-7.png)
+  ![alt text](imgs/image-7.png)
 
 - Step 5: access the Cloud IDE to use **dbt**.
-  ![alt text](image-8.png)
+  ![alt text](imgs/image-8.png)
 
 - Step 6: there's a green button saying _"Initialize dbt project"_ -> click it and it'll create necessary files of the project.  
-  ![alt text](image-9.png)
+  ![alt text](imgs/image-9.png)
 
 ## Alternative B: Using local dbt
 
@@ -136,7 +136,7 @@ Navigate to the folder where **Dockerfile** and **docker-compose.yaml** locate, 
 
 - For `dbt`, type in terminal: `docker compose exec dbt bash` -> it will lead to the dbt container at working directory (i.e., /usr/app/dbt), then run `dbt --version` to see if it is properly installed.
 
-![alt text](image-12.png)
+![alt text](imgs/image-12.png)
 
 To get out the container, type: **exit**.
 
@@ -144,7 +144,7 @@ To get out the container, type: **exit**.
 
 - For `duckdb`, type in terminal: `docker compose exec duckdb duckdb`. If it runs flawlessly, then you're good to go.
 
-![alt text](image-13.png)
+![alt text](imgs/image-13.png)
 
 ### Step 4: Configure dbt Profile
 
@@ -190,7 +190,7 @@ taxi_rides_ny: # -> dbt project name, needs to match exactly
 > [!TIP]
 > To check the location of your `profiles.yml` file, you can run `dbt debug --config-dir`.
 
-![alt text](image-14.png)
+![alt text](imgs/image-14.png)
 
 ### Step 5: Download and Ingest Data
 
